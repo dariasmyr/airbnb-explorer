@@ -74,5 +74,3 @@ class DataFormatter:
             self.df.to_csv(new_filename, index=False)
         except ValueError:
             raise ValueError("Invalid CSV file!")
-
-
