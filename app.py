@@ -3,6 +3,7 @@ from modules.stats import DescriptiveStatistics
 from modules.stats import DistributionStatistics
 from modules.stats import CorrelationStatistics
 from modules.stats import TepmoralStatistics
+from modules.metrics import Metrics
 
 print('Cleaning data...')
 
@@ -43,10 +44,11 @@ def get_distribution(new_filename):
 
 def get_correlation(new_filename):
     stats = CorrelationStatistics(new_filename)
-    stats.create_correlation('calculated_host_listings_count', 'price')
+    stats.create_correlation('number_of_reviews', 'price')
     stats.create_heatmap()
     stats.create_scatterplot('number_of_reviews', 'price')
     stats.create_lineplot('number_of_reviews', 'price')
+
 
 def get_temporal(new_filename):
     stats = TepmoralStatistics(new_filename)
@@ -55,7 +57,13 @@ def get_temporal(new_filename):
     stats.plot_num_reviews_heatmap()
 
 
+def get_metrics(new_filename):
+    metrics = Metrics(new_filename)
+    print(metrics.mean_price())
+
+
 get_stats('data/cleared_data.csv')
 get_distribution('data/cleared_data.csv')
 get_correlation('data/cleared_data.csv')
 get_temporal('data/cleared_data.csv')
+get_metrics('data/cleared_data.csv')
