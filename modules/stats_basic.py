@@ -37,7 +37,8 @@ class DescriptiveStatistics:
         try:
             # explain what is mean and how it is calculated
             print(
-                'Mean is the average of all the values in a column. It is calculated by adding all the values in a column and dividing the sum by the number of values in the column.')
+                'Mean is the average of all the values in a column. It is calculated by adding all the values in a '
+                'column and dividing the sum by the number of values in the column.')
             return self.df.apply(statistics.mean).apply(lambda x: '%.2f' % x)
         except statistics.StatisticsError:
             print('No numeric columns found!')
@@ -47,7 +48,8 @@ class DescriptiveStatistics:
         try:
             # explain what is median and how it is calculated
             print(
-                'Median is the middle value of a column. It is calculated by sorting the values in a column and taking the middle value.')
+                'Median is the middle value of a column. It is calculated by sorting the values in a column and '
+                'taking the middle value.')
             return self.df.apply(statistics.median).apply(lambda x: '%.2f' % x)
         except statistics.StatisticsError:
             print('No numeric columns found!')

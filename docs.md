@@ -11,9 +11,9 @@ The goal of this release is to collect data on NYC Airbnb listings, clean the da
 - Export cleaned data to a SQL database
 
 ### Tech Requirements
-- Ability to import data from various sources, such as CSV files, Excel spreadsheets, and SQL databases
-- Data cleaning and preprocessing functions, including removing duplicates, handling missing values, and normalizing data
-- Ability to perform basic exploratory data analysis (EDA) to gain insights into the data
+- [x] Ability to import data from various sources, such as CSV files, Excel spreadsheets, and SQL databases
+- [x] Data cleaning and preprocessing functions, including removing duplicates, handling missing values, and normalizing data
+- [x] Ability to perform basic exploratory data analysis (EDA) to gain insights into the data
 - Suggested libraries: pandas, NumPy, SQLAlchemy
 
 ## Release 2: Data Analysis and Visualization
@@ -25,8 +25,8 @@ The goal of this release is to perform advanced data analysis, create visualizat
 - Use machine learning techniques to predict prices based on factors such as location, room type, and amenities
 
 ### Tech Requirements
-- Advanced data analysis capabilities, such as statistical analysis, correlation analysis, and regression analysis
-- Ability to create visualizations to better understand the data, including histograms, scatter plots, and heatmaps
+- [ ] Advanced data analysis capabilities, such as statistical analysis, correlation analysis, and regression analysis
+- [ ] Ability to create visualizations to better understand the data, including histograms, scatter plots, and heatmaps
 - Suggested libraries: matplotlib, seaborn, Plotly, scikit-learn
 
 ## Release 3: Database Integration and Web Development
@@ -38,19 +38,19 @@ The goal of this release is to integrate the SQL database into a web application
 - Implement a search function that allows users to find Airbnb listings that meet specific criteria, such as price range, number of bedrooms, and proximity to tourist attractions
 
 ### Tech Requirements
-- Integration with SQL databases, allowing for data storage and retrieval
-- Ability to create a web application that displays the results of the data analysis in an interactive and visually appealing way
+- [ ] Integration with SQL databases, allowing for data storage and retrieval
+- [ ] Ability to create a web application that displays the results of the data analysis in an interactive and visually appealing way
 - Suggested libraries: Flask, Django, SQLAlchemy, Dash
 
 
-# EDA Methods
+# Methods (basic EDA)
 Descriptive statistics: You can calculate summary statistics for each variable, such as mean, median, mode, range, standard deviation, and variance. These metrics provide an overview of the data and help identify any outliers or unusual values.
 Distribution analysis: You can create histograms or density plots to visualize the distribution of each variable. This can help identify any skewness, multimodality, or outliers in the data.
 Correlation analysis: You can calculate correlation coefficients between pairs of variables to examine the strength and direction of their relationship. This can help identify any patterns or associations in the data.
 Visualization: You can create scatterplots, heatmaps, or other visualizations to explore the relationship between variables. This can help identify any trends, patterns, or clusters in the data.
 Time series analysis: You can analyze the temporal patterns in the data by examining variables such as last_review and availability_365 over time. This can help identify any seasonal patterns or trends.
 
-# Metrics
+# Metrics (advanced EDA)
 The average price of Airbnb listings in each neighbourhood group or neighbourhood.
 The most common room types in each neighbourhood group or neighbourhood.
 The average number of reviews per month for listings in each neighbourhood group or neighbourhood.
