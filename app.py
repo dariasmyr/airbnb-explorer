@@ -60,10 +60,17 @@ def get_temporal(new_filename):
 def get_metrics(new_filename):
     metrics = Metrics(new_filename)
     print(metrics.mean_price())
+    print(metrics.most_common_room_type())
+    print(metrics.avg_number_of_reviews_per_month())
+    print(metrics.percentage_of_available_listings_from())
+    print(metrics.unique_host_count())
+    print(metrics.hosts_with_multiple_listings())
+    print(metrics.top_hosts_by_number_of_listings())
+    metrics.correlation_with_price()
 
 
-get_stats('data/cleared_data.csv')
-get_distribution('data/cleared_data.csv')
-get_correlation('data/cleared_data.csv')
-get_temporal('data/cleared_data.csv')
+# get_stats('data/cleared_data.csv')
+# get_distribution('data/cleared_data.csv')
+# get_correlation('data/cleared_data.csv')
+# get_temporal('data/cleared_data.csv')
 get_metrics('data/cleared_data.csv')
