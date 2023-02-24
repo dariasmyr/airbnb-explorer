@@ -1,3 +1,4 @@
+from tabulate import tabulate
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -14,7 +15,8 @@ class Metrics:
             raise ValueError("Invalid CSV file!")
 
     def show_dataframe(self):
-        print(self.df.head())
+        # show beautiful dataframe with tabulate
+        print(tabulate(self.df, headers='keys', tablefmt='psql'))
 
     def mean_price_per_heighbourhood(self):
         # print('Average price of Airbnb listings in each neighbourhood group: ')
