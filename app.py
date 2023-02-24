@@ -65,7 +65,6 @@ def get_metrics(new_filename):
     metrics.percentage_of_available_listings_from()
     metrics.unique_host_count()
     metrics.hosts_with_multiple_listings()
-    metrics.top_hosts_by_number_of_listings()
 
 
 # get_stats('data/cleared_data.csv')

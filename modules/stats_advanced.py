@@ -16,7 +16,7 @@ class Metrics:
 
     def show_dataframe(self):
         # show beautiful dataframe with tabulate
-        print(tabulate(self.df, headers='keys', tablefmt='psql'))
+        print(tabulate(self.df.head(), headers='keys', tablefmt='psql'))
 
     def mean_price_per_heighbourhood(self):
         # print('Average price of Airbnb listings in each neighbourhood group: ')
@@ -119,12 +119,28 @@ class Metrics:
 
     def unique_host_count(self):
         print('Number of unique hosts in each neighbourhood group: ')
-        return self.df.groupby('neighbourhood_group')['host_id'].nunique(dropna=True)
+        unique_hosts = self.df.groupby('neighbourhood_group')['host_id'].nunique(dropna=True)
+        # print(unique_hosts)
+
+        unique_hosts.plot(kind='bar', color='orange')
+
+        plt.title('Number of unique hosts in each neighbourhood group')
+        plt.xlabel('Neighborhood Group')
+        plt.ylabel('Number of Unique Hosts')
+
+        plt.show()
 
     def hosts_with_multiple_listings(self):
         print('Number of hosts with multiple listings in each neighbourhood group: ')
-        return self.df.groupby('neighbourhood_group')['host_id'].apply(lambda x: (x.value_counts() > 3).sum())
+        host_listings = self.df.groupby('host_name')['host_id'].count()
 
-    def top_hosts_by_number_of_listings(self):
-        print('Top 10 hosts by number of listings in each neighbourhood group: ')
-        return self.df.groupby('neighbourhood_group')['host_id'].value_counts().groupby('neighbourhood_group').head(10)
+        top_hosts = host_listings.nlargest(10)
+        # print(top_hosts)
+
+        top_hosts.plot(kind='bar', color='orange')
+
+        plt.title('Top 10 hosts with multiple listings')
+        plt.xlabel('Host ID')
+        plt.ylabel('Number of Listings')
+
+        plt.show()
