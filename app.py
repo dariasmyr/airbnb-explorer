@@ -60,6 +60,7 @@ def get_metrics(new_filename):
     metrics.show_dataframe()
     metrics.mean_price_per_heighbourhood()
     metrics.correlation_with_price()
+    metrics.heatmap_correlation()
     metrics.most_common_room_type()
     metrics.avg_number_of_reviews_per_month()
     metrics.percentage_of_available_listings_from()

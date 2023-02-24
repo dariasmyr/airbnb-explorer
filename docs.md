@@ -25,8 +25,8 @@ The goal of this release is to perform advanced data analysis, create visualizat
 - Use machine learning techniques to predict prices based on factors such as location, room type, and amenities
 
 ### Tech Requirements
-- [ ] Advanced data analysis capabilities, such as statistical analysis, correlation analysis, and regression analysis
-- [ ] Ability to create visualizations to better understand the data, including histograms, scatter plots, and heatmaps
+- [x] Advanced data analysis capabilities, such as statistical analysis, correlation analysis, and regression analysis
+- [x] Ability to create visualizations to better understand the data, including histograms, scatter plots, and heatmaps
 - Suggested libraries: matplotlib, seaborn, Plotly, scikit-learn
 
 ## Release 3: Database Integration and Web Development

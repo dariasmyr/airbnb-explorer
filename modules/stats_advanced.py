@@ -67,6 +67,11 @@ class Metrics:
         ax.barh(correlation_df.index, correlation_df['Correlation'])
         plt.show()
 
+    def heatmap_correlation(self):
+        numeric_cols = ['price', 'minimum_nights', 'number_of_reviews', 'reviews_per_month', 'availability_365']
+        sns.heatmap(self.df[numeric_cols].corr(), annot=True, fmt='.2f', cmap='coolwarm', center=0.0)
+        plt.show()
+
     def most_common_room_type(self):
         # Group by neighborhood group and find the mode of room type
         mode_by_neighborhood = self.df.groupby('neighbourhood_group')['room_type'].agg(pd.Series.mode)
