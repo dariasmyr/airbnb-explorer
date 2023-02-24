@@ -20,8 +20,6 @@ def clean_data():
     return new_filename
 
 
-clean_data()
-
 print('Getting descriptive statistics...')
 
 
@@ -59,6 +57,7 @@ def get_temporal(new_filename):
 
 def get_metrics(new_filename):
     metrics = Metrics(new_filename)
+    metrics.show_dataframe()
     metrics.mean_price_per_heighbourhood()
     metrics.correlation_with_price()
     metrics.most_common_room_type()

@@ -1,6 +1,4 @@
-import numpy as np
 import pandas as pd
-import statistics
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -15,10 +13,13 @@ class Metrics:
         except ValueError:
             raise ValueError("Invalid CSV file!")
 
+    def show_dataframe(self):
+        print(self.df.head())
+
     def mean_price_per_heighbourhood(self):
-        print('Average price of Airbnb listings in each neighbourhood group: ')
+        # print('Average price of Airbnb listings in each neighbourhood group: ')
         mean_price = self.df.groupby('neighbourhood_group')['price'].mean().sort_values(ascending=False)
-        print(mean_price)
+        # print(mean_price)
 
         fig, ax = plt.subplots()
         ax.set_title('Average price of Airbnb listings in each neighbourhood group')
@@ -34,7 +35,7 @@ class Metrics:
         plt.show()
 
     def correlation_with_price(self):
-        print('Correlation between price and other columns: ')
+        # print('Correlation between price and other columns: ')
 
         numeric_cols = ['price', 'minimum_nights', 'number_of_reviews', 'reviews_per_month', 'availability_365']
 
@@ -56,7 +57,7 @@ class Metrics:
                 corr_explanation.append('Invalid correlation value')
 
         correlation_df = pd.DataFrame({'Correlation': correlation, 'Explanation': corr_explanation})
-        print(correlation_df)
+        # print(correlation_df)
         fig, ax = plt.subplots()
         ax.set_title('Correlation between price and other columns')
         ax.set_xlabel('Correlation (price)')
@@ -67,7 +68,7 @@ class Metrics:
     def most_common_room_type(self):
         # Group by neighborhood group and find the mode of room type
         mode_by_neighborhood = self.df.groupby('neighbourhood_group')['room_type'].agg(pd.Series.mode)
-        print(mode_by_neighborhood)
+        # print(mode_by_neighborhood)
 
         # Group by neighborhood group and room type, and count the number of occurrences
         room_counts = self.df.groupby(['neighbourhood_group', 'room_type']).size().reset_index(name='count')
@@ -93,12 +94,11 @@ class Metrics:
         print(avg_reviews)
 
     def percentage_of_available_listings_from(self):
-        print('Percentage of available listings with minimum 10 nights in each neighbourhood group: ')
+        # print('Percentage of available listings with minimum 10 nights in each neighbourhood group: ')
         available_listings = self.df.groupby('neighbourhood_group')['minimum_nights'].apply(
             lambda x: (x >= 10).sum() / len(x) * 100).apply(lambda x: '%.2f%%' % x)
-        print(available_listings)
+        # print(available_listings)
 
-        # create a stacked bar chart with number of listings with minimum 10 nights per neighbourhood group
         fig, ax = plt.subplots()
         ax.set_title('Number of listings with minimum 10 nights per neighbourhood group')
         ax.set_xlabel('Neighbourhood group')
