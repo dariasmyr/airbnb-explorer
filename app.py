@@ -11,13 +11,13 @@ print('Cleaning data...')
 def clean_data():
     filename = 'data/raw_data.csv'
     data_formatter = DataFormatter(filename)
-    data_formatter.get_dataframe()
+    # data_formatter.get_dataframe()
     data_formatter.get_datatypes()
-    data_formatter.check_missing_values()
-    data_formatter.drop_missing_values()
-    data_formatter.get_missing_values_after_drop()
-    new_filename = data_formatter.save_cleared_data('data/cleared_data.csv')
-    return new_filename
+    # data_formatter.check_missing_values()
+    # data_formatter.drop_missing_values()
+    # data_formatter.get_missing_values_after_drop()
+    # new_filename = data_formatter.save_cleared_data('data/cleared_data.csv')
+    # return new_filename
 
 
 print('Getting descriptive statistics...')
@@ -68,8 +68,9 @@ def get_metrics(new_filename):
     metrics.hosts_with_multiple_listings()
 
 
+clean_data()
 # get_stats('data/cleared_data.csv')
 # get_distribution('data/cleared_data.csv')
 # get_correlation('data/cleared_data.csv')
 # get_temporal('data/cleared_data.csv')
-get_metrics('data/cleared_data.csv')
+# get_metrics('data/cleared_data.csv')
