@@ -4,16 +4,18 @@ import statistics
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from modules.database_repository import Database
+
 
 class DescriptiveStatistics:
 
-    def __init__(self, filename):
+    def __init__(self):
         try:
-            self.df = pd.read_csv(filename).select_dtypes(include=['int64', 'float64'])
-        except FileNotFoundError:
-            raise FileNotFoundError("CSV file not found!")
-        except ValueError:
-            raise ValueError("Invalid CSV file!")
+            self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+            self.db.connect()
+            self.df = self.db.get_dataframe()
+        except Exception as e:
+            print(e)
 
     def set_data_type(self):
         """
@@ -97,13 +99,13 @@ class DescriptiveStatistics:
 
 
 class DistributionStatistics:
-    def __init__(self, filename):
+    def __init__(self):
         try:
-            self.df = pd.read_csv(filename).select_dtypes(include=['int64', 'float64'])
-        except FileNotFoundError:
-            raise FileNotFoundError("CSV file not found!")
-        except ValueError:
-            raise ValueError("Invalid CSV file!")
+            self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+            self.db.connect()
+            self.df = self.db.get_dataframe()
+        except Exception as e:
+            print(e)
 
     def create_histogram(self, column_name):
         """
@@ -129,13 +131,13 @@ class DistributionStatistics:
 
 
 class CorrelationStatistics:
-    def __init__(self, filename):
+    def __init__(self):
         try:
-            self.df = pd.read_csv(filename).select_dtypes(include=['int64', 'float64'])
-        except FileNotFoundError:
-            raise FileNotFoundError("CSV file not found!")
-        except ValueError:
-            raise ValueError("Invalid CSV file!")
+            self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+            self.db.connect()
+            self.df = self.db.get_dataframe()
+        except Exception as e:
+            print(e)
 
     def create_correlation(self, column1, column2):
         """
@@ -207,13 +209,13 @@ class CorrelationStatistics:
 
 
 class TepmoralStatistics:
-    def __init__(self, filename):
+    def __init__(self):
         try:
-            self.df = pd.read_csv(filename)
-        except FileNotFoundError:
-            raise FileNotFoundError("CSV file not found!")
-        except ValueError:
-            raise ValueError("Invalid CSV file!")
+            self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+            self.db.connect()
+            self.df = self.db.get_dataframe()
+        except Exception as e:
+            print(e)
 
     def plot_availability_365(self):
         fig, ax = plt.subplots(figsize=(12, 6))

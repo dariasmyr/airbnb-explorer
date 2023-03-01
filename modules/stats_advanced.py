@@ -2,17 +2,18 @@ from tabulate import tabulate
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from modules.database_repository import Database
 
 
 class Metrics:
 
-    def __init__(self, filename):
+    def __init__(self):
         try:
-            self.df = pd.read_csv(filename)
-        except FileNotFoundError:
-            raise FileNotFoundError("CSV file not found!")
-        except ValueError:
-            raise ValueError("Invalid CSV file!")
+            self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+            self.db.connect()
+            self.df = self.db.get_dataframe()
+        except Exception as e:
+            print(e)
 
     def show_dataframe(self):
         # show beautiful dataframe with tabulate
