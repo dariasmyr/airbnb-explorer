@@ -15,6 +15,19 @@ class Predictor:
         self.db.connect()
         self.data = self.db.get_dataframe()
 
+        # Load and preprocess data
+        self.data = self.data.drop(['id', 'name', 'host_id', 'host_name', 'last_review'], axis=1)
+        self.data = pd.get_dummies(self.data, columns=['neighbourhood_group', 'neighbourhood', 'room_type'])
+        self.data.columns = self.data.columns.astype(str)
+
+        # Split the data into features and target
+        self.X = self.data.drop(['price'], axis=1)
+        self.y = self.data['price']
+
+        # Train Random Forest Regression model
+        self.rf_model = RandomForestRegressor()
+        self.rf_model.fit(self.X, self.y)
+
     def predict_price(self):
         # Load data and drop unnecessary columns
         data = self.data
@@ -73,4 +86,33 @@ class Predictor:
         print('Best model: ', best_model)
 
         # Return the predicted prices and the best model
-        return y_pred, best_model
+        return y_pred
+
+    def predict_single_price(self, neighbourhood_group, neighbourhood, latitude, longitude, room_type, minimum_nights,
+                             number_of_reviews, reviews_per_month, calculated_host_listings_count, availability_365):
+        # Create a dictionary of input features
+        input_data = {'neighbourhood_group': neighbourhood_group,
+                      'neighbourhood': neighbourhood,
+                      'latitude': latitude,
+                      'longitude': longitude,
+                      'room_type': room_type,
+                      'minimum_nights': minimum_nights,
+                      'number_of_reviews': number_of_reviews,
+                      'reviews_per_month': reviews_per_month,
+                      'calculated_host_listings_count': calculated_host_listings_count,
+                      'availability_365': availability_365}
+
+        # Convert input data to DataFrame
+        input_df = pd.DataFrame([input_data])
+
+        # One-hot encode categorical variables
+        input_df = pd.get_dummies(input_df, columns=['neighbourhood_group', 'neighbourhood', 'room_type'])
+
+        # Reorder columns to match training data
+        input_df = input_df.reindex(columns=self.X.columns, fill_value=0)
+
+        # Predict the price using Random Forest Regression model
+        y_pred = self.rf_model.predict(input_df)
+
+        # Return the predicted price
+        return y_pred[0]

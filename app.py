@@ -74,10 +74,20 @@ def get_metrics():
 
 def predict_price():
     predictor = Predictor()
-    predictor.predict_price()
+    price = predictor.predict_single_price(neighbourhood_group='Manhattan',
+                                           neighbourhood='Upper West Side',
+                                           latitude=40.7851,
+                                           longitude=-73.9683,
+                                           room_type='Entire home/apt',
+                                           minimum_nights=3,
+                                           number_of_reviews=10,
+                                           reviews_per_month=0.5,
+                                           calculated_host_listings_count=2,
+                                           availability_365=60)
+    print('Predicted price:', price)
 
 
-connect_to_database()
+# connect_to_database()
 # clean_data()
 # get_stats('data/cleared_data.csv')
 # get_distribution('data/cleared_data.csv')
