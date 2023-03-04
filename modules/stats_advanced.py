@@ -73,6 +73,16 @@ class Metrics:
         sns.heatmap(self.df[numeric_cols].corr(), annot=True, fmt='.2f', cmap='coolwarm', center=0.0)
         plt.show()
 
+    def heatmap_density_of_listings(self):
+        sns.heatmap(self.df.groupby(['neighbourhood_group', 'room_type']).size().unstack(fill_value=0), annot=True,
+                    fmt='d', cmap='coolwarm')
+
+        plt.title('Density of Listings by Neighborhood Group')
+        plt.xlabel('Neighborhood')
+        plt.ylabel('Neighborhood Group')
+
+        plt.show()
+
     def most_common_room_type(self):
         # Group by neighborhood group and find the mode of room type
         mode_by_neighborhood = self.df.groupby('neighbourhood_group')['room_type'].agg(pd.Series.mode)

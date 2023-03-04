@@ -4,6 +4,7 @@ from modules.stats_basic import DescriptiveStatistics
 from modules.stats_basic import DistributionStatistics
 from modules.stats_basic import CorrelationStatistics
 from modules.stats_basic import TepmoralStatistics
+from modules.predictor import Predictor
 
 from modules.database_repository import Database
 
@@ -12,9 +13,6 @@ def connect_to_database():
     print('Connecting to database...')
     db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
     db.connect()
-
-
-print('Cleaning data...')
 
 
 def clean_data():
@@ -26,9 +24,6 @@ def clean_data():
     # data_formatter.get_missing_values_after_drop()
     # new_filename = data_formatter.save_cleared_data('data/cleared_data.csv')
     # return new_filename
-
-
-print('Getting descriptive statistics...')
 
 
 def get_stats():
@@ -69,11 +64,18 @@ def get_metrics():
     metrics.mean_price_per_heighbourhood()
     metrics.correlation_with_price()
     metrics.heatmap_correlation()
+    metrics.heatmap_density_of_listings()
     metrics.most_common_room_type()
     metrics.avg_number_of_reviews_per_month()
     metrics.percentage_of_available_listings_from()
     metrics.unique_host_count()
     metrics.hosts_with_multiple_listings()
+
+
+def predict_price():
+    predictor = Predictor()
+    predictor.handle_data()
+    predictor.train_model()
 
 
 connect_to_database()
@@ -82,4 +84,5 @@ clean_data()
 # get_distribution('data/cleared_data.csv')
 # get_correlation('data/cleared_data.csv')
 # get_temporal('data/cleared_data.csv')
-get_metrics()
+# get_metrics()
+predict_price()
