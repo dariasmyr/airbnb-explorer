@@ -31,6 +31,8 @@ class Predictor:
         self.rf_model = RandomForestRegressor()
         self.rf_model.fit(self.X, self.y)
 
+        self.DATASET_PATH = os.path.join(os.path.dirname(__file__), '../data/best_model.joblib')
+
     def predict_price(self):
 
         # Split the data into training and testing sets
@@ -69,20 +71,20 @@ class Predictor:
         if best_model == 'Linear Regression':
             y_pred = lr_model.predict(X_test)
             print('Saving the model (Linear Regression) to file...')
-            joblib.dump(lr_model, '../data/best_model.joblib')
+            joblib.dump(lr_model, self.DATASET_PATH)
         elif best_model == 'Decision Tree Regression':
             y_pred = dt_model.predict(X_test)
             print('Saving the model (Decision Tree Regression) to file...')
-            joblib.dump(dt_model, '../data/best_model.joblib')
+            joblib.dump(dt_model, self.DATASET_PATH)
         elif best_model == 'Random Forest Regression':
             y_pred = rf_model.predict(X_test)
             print('Saving the model (Random Forest Regression) to file...')
-            joblib.dump(rf_model, 'best_model.joblib')
+            joblib.dump(rf_model, self.DATASET_PATH)
 
             # Check if the trained model exists in the data folder
             if os.path.exists('best_model.joblib'):
                 # Load the trained model from file
-                self.rf_model = joblib.load('best_model.joblib')
+                self.rf_model = joblib.load(self.DATASET_PATH)
                 print('Model loaded from file.')
             else:
                 # Wait for the file to be created
@@ -104,9 +106,9 @@ class Predictor:
     def predict_single_price(self, neighbourhood_group, neighbourhood, latitude, longitude, room_type, minimum_nights,
                              number_of_reviews, reviews_per_month, calculated_host_listings_count, availability_365):
         # Check if the trained model exists in the data folder
-        if os.path.exists('best_model.joblib'):
+        if os.path.exists(self.DATASET_PATH):
             # Load the trained model from file
-            self.rf_model = joblib.load('best_model.joblib')
+            self.rf_model = joblib.load(self.DATASET_PATH)
             print('Model loaded from file.')
         else:
             # Train the model
