@@ -35,7 +35,7 @@ class Database:
             logging.error(e)
             return
 
-    def load_data_to_db(self, file_path):
+    def save_data_to_db(self, file_path):
         try:
             with open(file_path, 'r') as f:
                 reader = csv.reader(f)
@@ -73,11 +73,6 @@ class Database:
         print("Data loaded successfully to database.")
 
     def get_dataframe(self):
-        try:
-            df = pd.read_sql_table('Listings', self.conn)
-            return df
-        except Exception as e:
-            print("An error occurred while getting dataframe. Please see the logs for details.")
-            logging.error(e)
-            return
+        df = pd.read_sql_table('Listings', self.conn)
+        return df
 

@@ -74,12 +74,11 @@ def get_metrics():
 
 def predict_price():
     predictor = Predictor()
-    predictor.handle_data()
-    predictor.train_model()
+    predictor.predict_price()
 
 
 connect_to_database()
-clean_data()
+# clean_data()
 # get_stats('data/cleared_data.csv')
 # get_distribution('data/cleared_data.csv')
 # get_correlation('data/cleared_data.csv')
