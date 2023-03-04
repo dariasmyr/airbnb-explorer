@@ -1,3 +1,5 @@
+import os
+
 import joblib
 import pandas as pd
 from sklearn.linear_model import LinearRegression
@@ -38,19 +40,24 @@ class Predictor:
         X_train.columns = X_train.columns.astype(str)
 
         # Train and evaluate Linear Regression model
+        print('Training Linear Regression model...')
         lr_model = LinearRegression()
         lr_model.fit(X_train, y_train)
+        print('Training completed.')
         lr_score = lr_model.score(X_test, y_test)
 
         # Train and evaluate Decision Tree Regression model
+        print('Training Decision Tree Regression model...')
         dt_model = DecisionTreeRegressor()
         dt_model.fit(X_train, y_train)
+        print('Training completed.')
         dt_score = dt_model.score(X_test, y_test)
 
         # Train and evaluate Random Forest Regression model
+        print('Training Random Forest Regression model...')
         rf_model = RandomForestRegressor()
         rf_model.fit(X_train, y_train)
-
+        print('Training completed.')
         rf_score = rf_model.score(X_test, y_test)
 
         # Compare the models and choose the best one
@@ -61,13 +68,27 @@ class Predictor:
         # Predict the prices using the best model
         if best_model == 'Linear Regression':
             y_pred = lr_model.predict(X_test)
-            model = lr_model
+            print('Saving the model (Linear Regression) to file...')
+            joblib.dump(lr_model, '../data/best_model.joblib')
         elif best_model == 'Decision Tree Regression':
             y_pred = dt_model.predict(X_test)
-            model = dt_model
+            print('Saving the model (Decision Tree Regression) to file...')
+            joblib.dump(dt_model, '../data/best_model.joblib')
         elif best_model == 'Random Forest Regression':
             y_pred = rf_model.predict(X_test)
-            model = rf_model
+            print('Saving the model (Random Forest Regression) to file...')
+            joblib.dump(rf_model, 'best_model.joblib')
+
+            # Check if the trained model exists in the data folder
+            if os.path.exists('best_model.joblib'):
+                # Load the trained model from file
+                self.rf_model = joblib.load('best_model.joblib')
+                print('Model loaded from file.')
+            else:
+                # Wait for the file to be created
+                while not os.path.exists('best_model.joblib'):
+                    print('Waiting for the model to be saved...')
+                    pass
 
         # Print the mean squared error and the coefficient of determination
         print('Mean squared error: %.2f'
@@ -77,14 +98,21 @@ class Predictor:
 
         print('Best model: ', best_model)
 
-        # Save the best model to a file in data folder
-        joblib.dump(model, '../data/best_model.joblib')
-
         # Return the predicted prices and the best model
         return y_pred
 
     def predict_single_price(self, neighbourhood_group, neighbourhood, latitude, longitude, room_type, minimum_nights,
                              number_of_reviews, reviews_per_month, calculated_host_listings_count, availability_365):
+        # Check if the trained model exists in the data folder
+        if os.path.exists('best_model.joblib'):
+            # Load the trained model from file
+            self.rf_model = joblib.load('best_model.joblib')
+            print('Model loaded from file.')
+        else:
+            # Train the model
+            print('Model not found. Training the model...')
+            self.predict_price()
+
         # Create a dictionary of input features
         input_data = {'neighbourhood_group': neighbourhood_group,
                       'neighbourhood': neighbourhood,
@@ -101,12 +129,15 @@ class Predictor:
         input_df = pd.DataFrame([input_data])
 
         # One-hot encode categorical variables
+        print('One-hot encoding categorical variables...')
         input_df = pd.get_dummies(input_df, columns=['neighbourhood_group', 'neighbourhood', 'room_type'])
 
         # Reorder columns to match training data
+        print('Reordering columns...')
         input_df = input_df.reindex(columns=self.X.columns, fill_value=0)
 
         # Predict the price using Random Forest Regression model
+        print('Predicting price...')
         y_pred = self.rf_model.predict(input_df)
 
         # Return the predicted price
