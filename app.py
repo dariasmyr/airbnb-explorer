@@ -74,6 +74,7 @@ def get_metrics():
 
 def predict_price():
     predictor = Predictor()
+    # predictor.predict_price()
     price = predictor.predict_single_price(neighbourhood_group='Manhattan',
                                            neighbourhood='Upper West Side',
                                            latitude=40.7851,
