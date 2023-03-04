@@ -1,3 +1,5 @@
+from IPython.core.display_functions import display
+
 from modules.cleaner import DataFormatter
 from modules.stats_advanced import Metrics
 from modules.stats_basic import DescriptiveStatistics
@@ -5,6 +7,7 @@ from modules.stats_basic import DistributionStatistics
 from modules.stats_basic import CorrelationStatistics
 from modules.stats_basic import TepmoralStatistics
 from modules.predictor import Predictor
+import ipywidgets as widgets
 
 from modules.database_repository import Database
 
@@ -74,18 +77,111 @@ def get_metrics():
 
 def predict_price():
     predictor = Predictor()
-    # predictor.predict_price()
-    price = predictor.predict_single_price(neighbourhood_group='Manhattan',
-                                           neighbourhood='Upper West Side',
-                                           latitude=40.7851,
-                                           longitude=-73.9683,
-                                           room_type='Entire home/apt',
-                                           minimum_nights=3,
-                                           number_of_reviews=10,
-                                           reviews_per_month=0.5,
-                                           calculated_host_listings_count=2,
-                                           availability_365=60)
-    print('Predicted price:', price)
+
+    neighbourhood_group = widgets.Text(
+        value='Manhattan',
+        placeholder='Type neighbourhood group',
+        description='Neighbourhood Group:'
+    )
+
+    neighbourhood = widgets.Text(
+        value='Upper West Side',
+        placeholder='Type neighbourhood',
+        description='Neighbourhood:'
+    )
+
+    latitude = widgets.FloatText(
+        value=40.785091,
+        description='Latitude:'
+    )
+
+    longitude = widgets.FloatText(
+        value=-73.968285,
+        description='Longitude:'
+    )
+
+    room_type = widgets.Dropdown(
+        options=['Private room', 'Entire home/apt', 'Shared room'],
+        value='Private room',
+        description='Room Type:'
+    )
+
+    minimum_nights = widgets.IntSlider(
+        value=1,
+        min=1,
+        max=30,
+        step=1,
+        description='Minimum Nights:'
+    )
+
+    number_of_reviews = widgets.IntSlider(
+        value=5,
+        min=0,
+        max=500,
+        step=1,
+        description='Number of Reviews:'
+    )
+
+    reviews_per_month = widgets.FloatSlider(
+        value=1.0,
+        min=0,
+        max=20.0,
+        step=0.1,
+        description='Reviews per Month:'
+    )
+
+    calculated_host_listings_count = widgets.IntSlider(
+        value=1,
+        min=0,
+        max=100,
+        step=1,
+        description='Host Listings Count:'
+    )
+
+    availability_365 = widgets.IntSlider(
+        value=30,
+        min=0,
+        max=365,
+        step=1,
+        description='Availability (in days):'
+    )
+
+    form_items = [
+        neighbourhood_group,
+        neighbourhood,
+        latitude,
+        longitude,
+        room_type,
+        minimum_nights,
+        number_of_reviews,
+        reviews_per_month,
+        calculated_host_listings_count,
+        availability_365
+    ]
+
+    form = widgets.VBox(form_items)
+
+    display(form)
+
+    def on_button_click(button):
+        price = predictor.predict_single_price(
+            neighbourhood_group.value,
+            neighbourhood.value,
+            latitude.value,
+            longitude.value,
+            room_type.value,
+            minimum_nights.value,
+            number_of_reviews.value,
+            reviews_per_month.value,
+            calculated_host_listings_count.value,
+            availability_365.value
+        )
+
+        print('Predicted price:', price)
+
+    button = widgets.Button(description='Predict price')
+    button.on_click(on_button_click)
+    display(button)
 
 
 # connect_to_database()
