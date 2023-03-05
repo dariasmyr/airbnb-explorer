@@ -92,24 +92,29 @@
         <h2>Price</h2>
         <div class="diagram">
           <h3>Mean Price per Neighbourhood Chart</h3>
-          <p>The price of a rental is one of the most important factors when choosing a rental. The price of a rental is determined by the number of bedrooms, the location, and the amenities. The chart below shows the mean price per neighbourhood. The mean price per neighbourhood is calculated by taking the mean price of all rentals in a neighbourhood.</p><svg width="100%" height="75%" viewBox="0 0 960 400">{{ mean_price_per_neighbourhood_svg|safe }}</svg>
+          <p>The price of a rental is one of the most important factors when choosing a rental. The price of a rental is determined by the number of bedrooms, the location, and the amenities. The chart below shows the mean price per neighbourhood. The mean price per neighbourhood is calculated by taking the mean price of all rentals in a neighbourhood.</p>
+            <svg viewBox="0 0 1100 450">{{ mean_price_per_neighbourhood_svg|safe }}</svg>
         </div>
         <div class="diagram">
           <h3>Correlation with Price</h3>
-          <p>The following graph shows the correlation between the price of a several features of a rental.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ correlation_with_price_svg|safe }}</svg>
+          <p>The following graph shows the correlation between the price of a several features of a rental.</p>
+            <svg viewBox="0 0 1100 450">{{ correlation_with_price_svg|safe }}</svg>
         </div>
         <div class="diagram">
           <h3>Correlation with Other Factors</h3>
-          <p>The following heatmap shows the correlation between various features of Airbnb listings. This can help users identify relationships between different variables, such as the number of reviews and the availability of the listing.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ heatmap_correlation_svg|safe }}</svg>
+          <p>The following heatmap shows the correlation between various features of Airbnb listings. This can help users identify relationships between different variables, such as the number of reviews and the availability of the listing.</p>
+            <svg viewBox="0 0 1100 450">{{ heatmap_correlation_svg|safe }}</svg>
         </div>
         <div class="section">
           <h3>Conveniences</h3>
           <h3>Listings Density per Neighborhood</h3>
-          <p>The following graph shows the number of listings per neighborhood. This can help users identify neighborhoods with a high density of listings, which may be useful for users who are looking for a rental in a popular neighborhood.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ heatmap_density_of_listings_svg|safe }}</svg>
+          <p>The following graph shows the number of listings per neighborhood. This can help users identify neighborhoods with a high density of listings, which may be useful for users who are looking for a rental in a popular neighborhood.</p>
+            <svg viewBox="0 0 1100 450">{{ heatmap_density_of_listings_svg|safe }}</svg>
         </div>
         <div class="diagram">
           <h3>Room Type</h3>
-          <p>The following graph shows the number of listings per room type. This can help users identify neighborhoods with a high density of listings, which may be useful for users who are looking for a rental in a popular neighborhood.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ most_common_room_type_svg|safe }}</svg>
+          <p>The following graph shows the number of listings per room type. This can help users identify neighborhoods with a high density of listings, which may be useful for users who are looking for a rental in a popular neighborhood.</p>
+            <svg viewBox="0 0 1100 450">{{ most_common_room_type_svg|safe }}</svg>
         </div>
       </div>
     </div>
