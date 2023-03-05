@@ -4,7 +4,7 @@ import joblib
 from IPython.core.display_functions import display
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
+# from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -14,7 +14,6 @@ from modules.database_repository import Database
 
 
 class Predictor:
-
     def __init__(self):
         self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
         self.db.connect()
@@ -36,7 +35,6 @@ class Predictor:
         self.DATASET_PATH = os.path.join(os.path.dirname(__file__), '../data/best_model.joblib')
 
     def predict_price(self):
-
         # Split the data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.2, random_state=42)
 

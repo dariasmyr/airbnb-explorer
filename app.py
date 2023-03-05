@@ -4,7 +4,7 @@ from modules.stats_basic import DescriptiveStatistics
 from modules.stats_basic import DistributionStatistics
 from modules.stats_basic import CorrelationStatistics
 from modules.stats_basic import TepmoralStatistics
-from modules.predictor import Predictor
+from modules.new_predictor import Predictor
 
 from modules.database_repository import Database
 
@@ -85,4 +85,4 @@ def predict_price():
 # get_correlation('data/cleared_data.csv')
 # get_temporal('data/cleared_data.csv')
 # get_metrics()
-predict_price()
+# predict_price()
