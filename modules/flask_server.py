@@ -1,10 +1,16 @@
+import io
 import os
 
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from matplotlib import pyplot as plt
+
 from stats_advanced import Metrics
-from io import StringIO
 import base64
+
+import matplotlib
+
+matplotlib.use('Agg')
 
 PATH_TO_TEMPLATE = os.path.join(os.path.dirname(__file__), '../templates')
 PATH_TO_STATIC = os.path.join(os.path.dirname(__file__), '../static')
@@ -55,48 +61,22 @@ def chart():
 
 @app.route('/plots')
 def plots():
+    # Get data from get_all_visualizations method in stats_advanced.py and pass it to the template
     metrics = Metrics()
-    # Create the plots
-    fig1 = metrics.mean_price_per_neighbourhood()
-    fig2 = metrics.correlation_with_price()
-    fig3 = metrics.heatmap_correlation()
-    fig4 = metrics.heatmap_density_of_listings()
-    fig5 = metrics.most_common_room_type()
-    fig6 = metrics.percentage_of_available_listings_from()
+    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20, 20))
+    mean_price_per_neighbourhood_svg = metrics.mean_price_per_neighbourhood()
+    correlation_with_price_svg = metrics.correlation_with_price()
+    heatmap_correlation_svg = metrics.heatmap_correlation()
+    heatmap_density_of_listings_svg = metrics.heatmap_density_of_listings()
+    most_common_room_type_svg = metrics.most_common_room_type()
 
-    # Save the plots to SVG files
-    io1 = StringIO()
-    fig1.savefig(io1, format='svg', bbox_inches='tight')
-    io1.seek(0)
-    plot_url1 = base64.b64encode(io1.getvalue().encode()).decode()
-
-    io2 = StringIO()
-    fig2.savefig(io2, format='svg', bbox_inches='tight')
-    io2.seek(0)
-    plot_url2 = base64.b64encode(io2.getvalue().encode()).decode()
-
-    io3 = StringIO()
-    fig3.savefig(io3, format='svg', bbox_inches='tight')
-    io3.seek(0)
-    plot_url3 = base64.b64encode(io3.getvalue().encode()).decode()
-
-    io4 = StringIO()
-    fig4.savefig(io4, format='svg', bbox_inches='tight')
-    io4.seek(0)
-    plot_url4 = base64.b64encode(io4.getvalue().encode()).decode()
-
-    io5 = StringIO()
-    fig5.savefig(io5, format='svg', bbox_inches='tight')
-    io5.seek(0)
-    plot_url5 = base64.b64encode(io5.getvalue().encode()).decode()
-
-    io6 = StringIO()
-    fig6.savefig(io6, format='svg', bbox_inches='tight')
-    io6.seek(0)
-    plot_url6 = base64.b64encode(io6.getvalue().encode()).decode()
-
-    # Render the HTML page with the plots
-    return render_template('plots.html', plot_url1=plot_url1, plot_url2=plot_url2, plot_url3=plot_url3, plot_url4=plot_url4, plot_url5=plot_url5, plot_url6=plot_url6)
+    return render_template('plots.html',
+                           mean_price_per_neighbourhood_svg=mean_price_per_neighbourhood_svg,
+                           correlation_with_price_svg=correlation_with_price_svg,
+                           heatmap_correlation_svg=heatmap_correlation_svg,
+                           heatmap_density_of_listings_svg=heatmap_density_of_listings_svg,
+                           most_common_room_type_svg=most_common_room_type_svg
+                           )
 
 
 if __name__ == '__main__':

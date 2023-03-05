@@ -1,24 +1,117 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>My Plots</title>
+    <title>My Data Analysis Results</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #ffffff;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin-top: 0;
+        margin-bottom: 16px;
+        color: #2d2d2d;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 16px;
+        line-height: 1.5;
+        word-wrap: break-word;
+        /* Prevents words from being cut off in diagrams */
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px;
+        display: flex;
+        /* Uses flexbox to position elements */
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .diagram {
+          overflow: visible;
+          max-width: 960px;
+          margin: 16px;
+      }
+
+      .section {
+        margin-top: 48px;
+        margin-bottom: 48px;
+        width: 100%;
+        max-width: 960px;
+      }
+
+      .section h2 {
+        font-size: 32px;
+        font-weight: 500;
+        color: #2d2d2d;
+      }
+
+      .section h3 {
+        font-size: 24px;
+        font-weight: 500;
+        color: #2d2d2d;
+        margin-top: 32px;
+        margin-bottom: 16px;
+      }
+
+      .section p {
+        font-size: 16px;
+        font-weight: 300;
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .section .diagram {
+        margin-top: 32px;
+      }
+    </style>
   </head>
   <body>
-    <h1>My Plots</h1>
-    <div>
-      <img src="data:image/svg+xml;base64,{{ plot_url1 }}"  alt=""/>
-    </div>
-    <div>
-      <img src="data:image/svg+xml;base64,{{ plot_url2 }}"  alt=""/>
-    </div>
-    <div>
-      <img src="data:image/svg+xml;base64,{{ plot_url3 }}"  alt=""/>
-    </div>
-    <div>
-      <img src="data:image/svg+xml;base64,{{ plot_url4 }}"  alt=""/>
-    </div>
-    <div>
-      <img src="data:image/svg+xml;base64,{{ plot_url5 }}"  alt=""/>
+    <div class="container">
+      <h1>Data Analysis Results</h1>
+      <p>Welcome to the Airbnb Explorer! This page shows the results of our data analysis on Airbnb listings in New York City.</p>
+      <div class="section">
+        <h2>Overview</h2>
+        <p>The Airbnb Explorer project aims to provide users with insights into Airbnb listings in New York City. By analyzing data on Airbnb listings, this project helps users find the perfect rental for their needs.</p>
+      </div>
+      <div class="section">
+        <h2>Price</h2>
+        <div class="diagram">
+          <h3>Mean Price per Neighbourhood Chart</h3>
+          <p>The price of a rental is one of the most important factors when choosing a rental. The price of a rental is determined by the number of bedrooms, the location, and the amenities. The chart below shows the mean price per neighbourhood. The mean price per neighbourhood is calculated by taking the mean price of all rentals in a neighbourhood.</p><svg width="100%" height="75%" viewBox="0 0 960 400">{{ mean_price_per_neighbourhood_svg|safe }}</svg>
+        </div>
+        <div class="diagram">
+          <h3>Correlation with Price</h3>
+          <p>The following graph shows the correlation between the price of a several features of a rental.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ correlation_with_price_svg|safe }}</svg>
+        </div>
+        <div class="diagram">
+          <h3>Correlation with Other Factors</h3>
+          <p>The following heatmap shows the correlation between various features of Airbnb listings. This can help users identify relationships between different variables, such as the number of reviews and the availability of the listing.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ heatmap_correlation_svg|safe }}</svg>
+        </div>
+        <div class="section">
+          <h3>Conveniences</h3>
+          <h3>Listings Density per Neighborhood</h3>
+          <p>The following graph shows the number of listings per neighborhood. This can help users identify neighborhoods with a high density of listings, which may be useful for users who are looking for a rental in a popular neighborhood.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ heatmap_density_of_listings_svg|safe }}</svg>
+        </div>
+        <div class="diagram">
+          <h3>Room Type</h3>
+          <p>The following graph shows the number of listings per room type. This can help users identify neighborhoods with a high density of listings, which may be useful for users who are looking for a rental in a popular neighborhood.</p><svg width="100%" height="400" viewBox="0 0 960 400">{{ most_common_room_type_svg|safe }}</svg>
+        </div>
+      </div>
     </div>
   </body>
 </html>
