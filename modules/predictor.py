@@ -1,12 +1,14 @@
 import os
 
 import joblib
+from IPython.core.display_functions import display
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
+import ipywidgets as widgets
 
 from modules.database_repository import Database
 
@@ -42,24 +44,18 @@ class Predictor:
         X_train.columns = X_train.columns.astype(str)
 
         # Train and evaluate Linear Regression model
-        print('Training Linear Regression model...')
         lr_model = LinearRegression()
         lr_model.fit(X_train, y_train)
-        print('Training completed.')
         lr_score = lr_model.score(X_test, y_test)
 
         # Train and evaluate Decision Tree Regression model
-        print('Training Decision Tree Regression model...')
         dt_model = DecisionTreeRegressor()
         dt_model.fit(X_train, y_train)
-        print('Training completed.')
         dt_score = dt_model.score(X_test, y_test)
 
         # Train and evaluate Random Forest Regression model
-        print('Training Random Forest Regression model...')
         rf_model = RandomForestRegressor()
         rf_model.fit(X_train, y_train)
-        print('Training completed.')
         rf_score = rf_model.score(X_test, y_test)
 
         # Compare the models and choose the best one
@@ -70,35 +66,32 @@ class Predictor:
         # Predict the prices using the best model
         if best_model == 'Linear Regression':
             y_pred = lr_model.predict(X_test)
-            print('Saving the model (Linear Regression) to file...')
             joblib.dump(lr_model, self.DATASET_PATH)
         elif best_model == 'Decision Tree Regression':
             y_pred = dt_model.predict(X_test)
-            print('Saving the model (Decision Tree Regression) to file...')
             joblib.dump(dt_model, self.DATASET_PATH)
         elif best_model == 'Random Forest Regression':
             y_pred = rf_model.predict(X_test)
-            print('Saving the model (Random Forest Regression) to file...')
             joblib.dump(rf_model, self.DATASET_PATH)
 
             # Check if the trained model exists in the data folder
             if os.path.exists('best_model.joblib'):
                 # Load the trained model from file
                 self.rf_model = joblib.load(self.DATASET_PATH)
-                print('Model loaded from file.')
+                # print('Model loaded from file.')
             else:
                 # Wait for the file to be created
                 while not os.path.exists('best_model.joblib'):
-                    print('Waiting for the model to be saved...')
+                    # print('Waiting for the model to be saved...')
                     pass
 
         # Print the mean squared error and the coefficient of determination
-        print('Mean squared error: %.2f'
-              % mean_squared_error(y_test, y_pred))
-        print('Coefficient of determination: %.2f'
-              % r2_score(y_test, y_pred))
+        # print('Mean squared error: %.2f'
+        #      % mean_squared_error(y_test, y_pred))
+        # print('Coefficient of determination: %.2f'
+        #      % r2_score(y_test, y_pred))
 
-        print('Best model: ', best_model)
+        # print('Best model: ', best_model)
 
         # Return the predicted prices and the best model
         return y_pred
@@ -109,10 +102,10 @@ class Predictor:
         if os.path.exists(self.DATASET_PATH):
             # Load the trained model from file
             self.rf_model = joblib.load(self.DATASET_PATH)
-            print('Model loaded from file.')
+            # print('Model loaded from file.')
         else:
             # Train the model
-            print('Model not found. Training the model...')
+            # print('Model not found. Training the model...')
             self.predict_price()
 
         # Create a dictionary of input features
@@ -131,16 +124,124 @@ class Predictor:
         input_df = pd.DataFrame([input_data])
 
         # One-hot encode categorical variables
-        print('One-hot encoding categorical variables...')
+        # print('One-hot encoding categorical variables...')
         input_df = pd.get_dummies(input_df, columns=['neighbourhood_group', 'neighbourhood', 'room_type'])
 
         # Reorder columns to match training data
-        print('Reordering columns...')
+        # print('Reordering columns...')
         input_df = input_df.reindex(columns=self.X.columns, fill_value=0)
 
         # Predict the price using Random Forest Regression model
-        print('Predicting price...')
+        # print('Predicting price...')
         y_pred = self.rf_model.predict(input_df)
 
         # Return the predicted price
         return y_pred[0]
+
+    def create_form(self):
+        neighbourhood_group = widgets.Text(
+            value='Manhattan',
+            placeholder='Type neighbourhood group',
+            description='Neighbourhood Group:'
+        )
+
+        neighbourhood = widgets.Text(
+            value='Upper West Side',
+            placeholder='Type neighbourhood',
+            description='Neighbourhood:'
+        )
+
+        latitude = widgets.FloatText(
+            value=40.785091,
+            description='Latitude:'
+        )
+
+        longitude = widgets.FloatText(
+            value=-73.968285,
+            description='Longitude:'
+        )
+
+        room_type = widgets.Dropdown(
+            options=['Private room', 'Entire home/apt', 'Shared room'],
+            value='Private room',
+            description='Room Type:'
+        )
+
+        minimum_nights = widgets.IntSlider(
+            value=1,
+            min=1,
+            max=30,
+            step=1,
+            description='Minimum Nights:'
+        )
+
+        number_of_reviews = widgets.IntSlider(
+            value=5,
+            min=0,
+            max=500,
+            step=1,
+            description='Number of Reviews:'
+        )
+
+        reviews_per_month = widgets.FloatSlider(
+            value=1.0,
+            min=0,
+            max=20.0,
+            step=0.1,
+            description='Reviews per Month:'
+        )
+
+        calculated_host_listings_count = widgets.IntSlider(
+            value=1,
+            min=0,
+            max=100,
+            step=1,
+            description='Host Listings Count:'
+        )
+
+        availability_365 = widgets.IntSlider(
+            value=30,
+            min=0,
+            max=365,
+            step=1,
+            description='Availability (in days):'
+        )
+
+        form_items = [
+            neighbourhood_group,
+            neighbourhood,
+            latitude,
+            longitude,
+            room_type,
+            minimum_nights,
+            number_of_reviews,
+            reviews_per_month,
+            calculated_host_listings_count,
+            availability_365
+        ]
+
+        form = widgets.VBox(form_items)
+
+        display(form)
+
+        def on_button_click(button):
+            price = self.predict_single_price(
+                neighbourhood_group.value,
+                neighbourhood.value,
+                latitude.value,
+                longitude.value,
+                room_type.value,
+                minimum_nights.value,
+                number_of_reviews.value,
+                reviews_per_month.value,
+                calculated_host_listings_count.value,
+                availability_365.value
+            )
+            out = widgets.Output(layout={'border': '1px solid black'})
+            with out:
+                print('Predicted price: $', price)
+            display(out)
+
+        button = widgets.Button(description='Predict price')
+        button.on_click(on_button_click)
+        display(button)
