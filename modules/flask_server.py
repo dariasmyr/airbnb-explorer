@@ -1,7 +1,7 @@
 import io
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from matplotlib import pyplot as plt
 
@@ -50,6 +50,31 @@ class Listings(db.Model):
 def index():
     listings = Listings.query.all()
     return render_template('index.html', listings=listings)
+
+
+@app.route('/search')
+def search():
+    # Get the query parameters
+    sort_by = request.args.get('sort_by', 'id')
+    sort_dir = request.args.get('sort_dir', 'asc')
+    search_term = request.args.get('search_term', '')
+
+    # Construct the query
+    query = Listings.query.filter(Listings.name.ilike(f'%{search_term}%'))
+
+    # Add sorting to the query
+    sort_attr = getattr(Listings, sort_by)
+    if sort_dir == 'asc':
+        query = query.order_by(sort_attr.asc())
+    else:
+        query = query.order_by(sort_attr.desc())
+
+    # Execute the query
+    listings = query.all()
+
+    # Render the template with the listings
+    return render_template('search.html', listings=listings, sort_by=sort_by, sort_dir=sort_dir,
+                           search_term=search_term)
 
 
 @app.route('/chart')
