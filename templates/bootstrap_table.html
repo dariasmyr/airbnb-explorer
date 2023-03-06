@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<table id="data" class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Host ID</th>
+          <th>Host Name</th>
+          <th>Neighbourhood Group</th>
+          <th>Neighbourhood</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Room Type</th>
+          <th>Price</th>
+          <th>Minimum Nights</th>
+          <th>Number of Reviews</th>
+          <th>Last Review</th>
+          <th>Reviews per Month</th>
+          <th>Calculated Host Listings Count</th>
+          <th>Availability 365</th>
+        </tr>
+      </thead>
+      <tbody> {% for listing in listings %} <tr>
+          <td>{{ listing.id }}</td>
+          <td>{{ listing.name }}</td>
+          <td>{{ listing.host_id }}</td>
+          <td>{{ listing.host_name }}</td>
+          <td>{{ listing.neighbourhood_group }}</td>
+          <td>{{ listing.neighbourhood }}</td>
+          <td>{{ listing.latitude }}</td>
+          <td>{{ listing.longitude }}</td>
+          <td>{{ listing.room_type }}</td>
+          <td>{{ listing.price }}</td>
+          <td>{{ listing.minimum_nights }}</td>
+          <td>{{ listing.number_of_reviews }}</td>
+          <td>{{ listing.last_review }}</td>
+          <td>{{ listing.reviews_per_month }}</td>
+          <td>{{ listing.calculated_host_listings_count }}</td>
+          <td>{{ listing.availability_365 }}</td>
+        </tr> {% endfor %} </tbody>
+    </table>
+{% endblock %}

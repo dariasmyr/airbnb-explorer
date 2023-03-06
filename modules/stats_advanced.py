@@ -11,7 +11,7 @@ class Metrics:
 
     def __init__(self):
         try:
-            self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+            self.db = Database("sqlite+pysqlite:///:/../data/data_bak.sqlite3")
             self.db.connect()
             self.df = self.db.get_dataframe()
         except Exception as e:

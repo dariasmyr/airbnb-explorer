@@ -1,12 +1,12 @@
-import io
 import os
-
+import random
+import sys
+from faker import Faker
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from matplotlib import pyplot as plt
 
 from stats_advanced import Metrics
-import base64
 
 import matplotlib
 
@@ -19,7 +19,7 @@ app = Flask(__name__, template_folder=PATH_TO_TEMPLATE, static_folder=PATH_TO_ST
 print(app.template_folder)
 print(app.static_folder)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data_bak.sqlite3'
 db = SQLAlchemy(app)
 
 
@@ -46,42 +46,10 @@ class Listings(db.Model):
         return '<Listings %r>' % self.id
 
 
-@app.route('/')
+@app.route('/table')
 def index():
-    listings = Listings.query.all()
-    return render_template('index.html', listings=listings)
-
-
-@app.route('/search')
-def search():
-    # Get the query parameters
-    sort_by = request.args.get('sort_by', 'id')
-    sort_dir = request.args.get('sort_dir', 'asc')
-    search_term = request.args.get('search_term', '')
-
-    # Construct the query
-    query = Listings.query.filter(Listings.name.ilike(f'%{search_term}%'))
-
-    # Add sorting to the query
-    sort_attr = getattr(Listings, sort_by)
-    if sort_dir == 'asc':
-        query = query.order_by(sort_attr.asc())
-    else:
-        query = query.order_by(sort_attr.desc())
-
-    # Execute the query
-    listings = query.all()
-
-    # Render the template with the listings
-    return render_template('search.html', listings=listings, sort_by=sort_by, sort_dir=sort_dir,
-                           search_term=search_term)
-
-
-@app.route('/chart')
-def chart():
-    metrics = Metrics()
-    chart_data = metrics.mean_price_per_neighbourhood()
-    return render_template('charts.html', chart_data=chart_data)
+    listings = Listings.query.limit(100).all()
+    return render_template('bootstrap_table.html', title="Listings in NYC", listings=listings)
 
 
 @app.route('/plots')
@@ -106,3 +74,5 @@ def plots():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
+
+
