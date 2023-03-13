@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from sqlalchemy import create_engine, Float, Table, Column, Integer, String, MetaData
 import logging
@@ -5,7 +7,8 @@ import csv
 
 
 class Database:
-    def __init__(self, db_url):
+    def __init__(self, db_url, clean_data):
+        self.clean_data = clean_data
         self.conn = None
         self.engine = create_engine(db_url)
         self.metadata = MetaData()
@@ -35,9 +38,24 @@ class Database:
             logging.error(e)
             return
 
-    def save_data_to_db(self, file_path):
+    def create_database(self):
         try:
-            with open(file_path, 'r') as f:
+            # check if the database already exists
+            if os.path.exists(self.engine.url.database):
+                print("Database already exists.")
+                return
+            else:
+                # create a new database
+                self.conn.execute("CREATE DATABASE " + self.engine.url.database)
+                print("Database created successfully.")
+        except Exception as e:
+            print("An error occurred while creating database. Please see the logs for details.")
+            logging.error(e)
+            return
+
+    def save_data_to_db(self, clean_data):
+        try:
+            with open(clean_data, 'r') as f:
                 reader = csv.reader(f)
                 next(reader)
                 for row in reader:
@@ -75,4 +93,3 @@ class Database:
     def get_dataframe(self):
         df = pd.read_sql_table('Listings', self.conn)
         return df
-

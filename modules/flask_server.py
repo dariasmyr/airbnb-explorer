@@ -1,12 +1,9 @@
 import os
-import random
-import sys
-from faker import Faker
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from matplotlib import pyplot as plt
 
-from stats_advanced import Metrics
+from metrics import Metrics
 
 import matplotlib
 
@@ -54,9 +51,8 @@ def index():
 
 @app.route('/plots')
 def plots():
-    # Get data from get_all_visualizations method in stats_advanced.py and pass it to the template
+    # Get data from get_all_visualizations method in metrics.py and pass it to the template
     metrics = Metrics()
-    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20, 20))
     mean_price_per_neighbourhood_svg = metrics.mean_price_per_neighbourhood()
     correlation_with_price_svg = metrics.correlation_with_price()
     heatmap_correlation_svg = metrics.heatmap_correlation()
@@ -72,7 +68,23 @@ def plots():
                            )
 
 
+@app.route('/plots_new')
+def plots_new():
+    metrics = Metrics()
+    mean_price_per_neighbourhood_svg = metrics.mean_price_per_neighbourhood()
+    correlation_with_price_svg = metrics.correlation_with_price()
+    heatmap_correlation_svg = metrics.heatmap_correlation()
+    heatmap_density_of_listings_svg = metrics.heatmap_density_of_listings()
+    most_common_room_type_svg = metrics.most_common_room_type()
+
+    return render_template('plots_new.html',
+                           mean_price_per_neighbourhood_svg=mean_price_per_neighbourhood_svg,
+                           correlation_with_price_svg=correlation_with_price_svg,
+                           heatmap_correlation_svg=heatmap_correlation_svg,
+                           heatmap_density_of_listings_svg=heatmap_density_of_listings_svg,
+                           most_common_room_type_svg=most_common_room_type_svg
+                           )
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
-
-
