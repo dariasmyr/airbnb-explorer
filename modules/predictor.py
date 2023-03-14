@@ -221,7 +221,7 @@ class Predictor:
 
         display(form)
 
-        def on_button_click():
+        def on_button_click(button):
             price = self.predict_single_price(
                 neighbourhood_group.value,
                 neighbourhood.value,
