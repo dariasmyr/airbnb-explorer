@@ -1,16 +1,14 @@
 import plotly.graph_objs as go
 from plotly.offline import iplot
 import pandas as pd
-import seaborn as sns
 from modules.database_repository import Database
 
 
 class Metrics:
 
-    def __init__(self, cleaned_data):
+    def __init__(self):
         try:
-            print('Connecting to database...')
-            self.db = Database("sqlite+pysqlite:///:/../data/data_bak.sqlite3", cleaned_data)
+            self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
             self.db.connect()
             self.df = self.db.get_dataframe()
         except Exception as e:
