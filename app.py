@@ -1,6 +1,6 @@
 from modules.cleaner import DataFormatter
 from modules.metrics import Metrics
-from modules.new_predictor import Predictor
+from modules.predictor import Predictor
 
 
 def clean_data():
@@ -12,8 +12,7 @@ def clean_data():
 
 
 def get_metrics():
-    cleaned_data = clean_data()
-    metrics = Metrics(cleaned_data)
+    metrics = Metrics()
     metrics.mean_price_per_neighbourhood()
     metrics.correlation_with_price()
     metrics.heatmap_correlation()
