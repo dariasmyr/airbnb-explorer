@@ -82,17 +82,16 @@ class Predictor:
                 while not os.path.exists('best_model.joblib'):
                     # print('Waiting for the model to be saved...')
                     pass
+                # Print the mean squared error and the coefficient of determination
+                # print('Mean squared error: %.2f'
+                #      % mean_squared_error(y_test, y_pred))
+                # print('Coefficient of determination: %.2f'
+                #      % r2_score(y_test, y_pred))
 
-        # Print the mean squared error and the coefficient of determination
-        # print('Mean squared error: %.2f'
-        #      % mean_squared_error(y_test, y_pred))
-        # print('Coefficient of determination: %.2f'
-        #      % r2_score(y_test, y_pred))
+                # print('Best model: ', best_model)
 
-        # print('Best model: ', best_model)
-
-        # Return the predicted prices and the best model
-        return y_pred
+                # Return the predicted prices and the best model
+                return y_pred, best_model
 
     def predict_single_price(self, neighbourhood_group, neighbourhood, latitude, longitude, room_type, minimum_nights,
                              number_of_reviews, reviews_per_month, calculated_host_listings_count, availability_365):
@@ -222,7 +221,7 @@ class Predictor:
 
         display(form)
 
-        def on_button_click(button):
+        def on_button_click():
             price = self.predict_single_price(
                 neighbourhood_group.value,
                 neighbourhood.value,
