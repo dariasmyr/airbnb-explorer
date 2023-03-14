@@ -7,8 +7,7 @@ import csv
 
 
 class Database:
-    def __init__(self, db_url, clean_data):
-        self.clean_data = clean_data
+    def __init__(self, db_url):
         self.conn = None
         self.engine = create_engine(db_url)
         self.metadata = MetaData()
@@ -53,9 +52,9 @@ class Database:
             logging.error(e)
             return
 
-    def save_data_to_db(self, clean_data):
+    def save_data_to_db(self, cleaned_data):
         try:
-            with open(clean_data, 'r') as f:
+            with open(cleaned_data, 'r') as f:
                 reader = csv.reader(f)
                 next(reader)
                 for row in reader:
