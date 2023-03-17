@@ -168,4 +168,5 @@ class Metrics:
 
         iplot(fig)
 
-        return fig.to_html(full_html=False)
+        html = fig.to_html(full_html=False)
+        return html
