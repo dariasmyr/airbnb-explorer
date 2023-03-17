@@ -1,7 +1,6 @@
 import os
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from matplotlib import pyplot as plt
 
 from metrics import Metrics
 
@@ -46,44 +45,7 @@ class Listings(db.Model):
 @app.route('/table')
 def index():
     listings = Listings.query.limit(100).all()
-    return render_template('bootstrap_table.html', title="Listings in NYC", listings=listings)
-
-
-@app.route('/plots')
-def plots():
-    # Get data from get_all_visualizations method in metrics.py and pass it to the template
-    metrics = Metrics()
-    mean_price_per_neighbourhood_svg = metrics.mean_price_per_neighbourhood()
-    correlation_with_price_svg = metrics.correlation_with_price()
-    heatmap_correlation_svg = metrics.heatmap_correlation()
-    heatmap_density_of_listings_svg = metrics.heatmap_density_of_listings()
-    most_common_room_type_svg = metrics.most_common_room_type()
-
-    return render_template('plots.html',
-                           mean_price_per_neighbourhood_svg=mean_price_per_neighbourhood_svg,
-                           correlation_with_price_svg=correlation_with_price_svg,
-                           heatmap_correlation_svg=heatmap_correlation_svg,
-                           heatmap_density_of_listings_svg=heatmap_density_of_listings_svg,
-                           most_common_room_type_svg=most_common_room_type_svg
-                           )
-
-
-@app.route('/plots_new')
-def plots_new():
-    metrics = Metrics()
-    mean_price_per_neighbourhood_svg = metrics.mean_price_per_neighbourhood()
-    correlation_with_price_svg = metrics.correlation_with_price()
-    heatmap_correlation_svg = metrics.heatmap_correlation()
-    heatmap_density_of_listings_svg = metrics.heatmap_density_of_listings()
-    most_common_room_type_svg = metrics.most_common_room_type()
-
-    return render_template('plots_new.html',
-                           mean_price_per_neighbourhood_svg=mean_price_per_neighbourhood_svg,
-                           correlation_with_price_svg=correlation_with_price_svg,
-                           heatmap_correlation_svg=heatmap_correlation_svg,
-                           heatmap_density_of_listings_svg=heatmap_density_of_listings_svg,
-                           most_common_room_type_svg=most_common_room_type_svg
-                           )
+    return render_template('table.html', title="Listings in NYC", listings=listings)
 
 
 if __name__ == '__main__':
