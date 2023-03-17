@@ -1,7 +1,9 @@
 import plotly.graph_objs as go
-from plotly.offline import iplot
+import plotly.offline as pyo
 import pandas as pd
 from modules.database_repository import Database
+
+pyo.init_notebook_mode(connected=True)
 
 
 class Metrics:
@@ -23,7 +25,7 @@ class Metrics:
         fig.update_layout(title='Average price of Airbnb listings in each neighbourhood group', xaxis_title='Price',
                           yaxis_title='Neighbourhood group', yaxis_range=[mean_price.index[-1], mean_price.index[0]])
 
-        iplot(fig)
+        pyo.iplot(fig)
 
         html = fig.to_html(full_html=False)
         return html
@@ -59,7 +61,7 @@ class Metrics:
         fig.update_layout(title='Correlation between price and other columns', xaxis_title='Correlation (price)',
                           yaxis_title='Columns')
 
-        iplot(fig)
+        pyo.iplot(fig)
 
         html = fig.to_html(full_html=False)
         return html
@@ -71,7 +73,7 @@ class Metrics:
 
         fig = go.Figure(data=[data], layout=go.Layout(title='Correlation between columns'))
 
-        iplot(fig)
+        pyo.iplot(fig)
 
         html = fig.to_html(full_html=False)
         return html
@@ -86,7 +88,7 @@ class Metrics:
 
         fig = go.Figure(data=data, layout=go.Layout(title='Density of listings by neighbourhood group and room type'))
 
-        iplot(fig)
+        pyo.iplot(fig)
 
         html = fig.to_html(full_html=False)
         return html
@@ -110,7 +112,7 @@ class Metrics:
 
         fig = go.Figure(data=data, layout=go.Layout(title='Most common room type in each neighbourhood group',
                                                     barmode='stack'))
-        iplot(fig)
+        pyo.iplot(fig)
 
         html = fig.to_html(full_html=False)
         return html
@@ -134,7 +136,8 @@ class Metrics:
         layout = go.Layout(title='Percentage of available listings with minimum 10 nights in each neighborhood group')
 
         fig = go.Figure(data=data, layout=layout)
-        iplot(fig)
+
+        pyo.iplot(fig)
 
         html = fig.to_html(full_html=False)
         return html
@@ -166,7 +169,7 @@ class Metrics:
         fig.update_layout(title='Top 10 hosts with multiple listings', xaxis_title='Host ID',
                           yaxis_title='Number of Listings')
 
-        iplot(fig)
+        pyo.iplot(fig)
 
         html = fig.to_html(full_html=False)
         return html
