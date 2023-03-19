@@ -190,6 +190,38 @@ percentage_of_available_listings_from_each_neighbourhood_group_fig.update_layout
     paper_bgcolor=colors['background'],
 )
 
+hosts_with_multiple_listings = df.groupby('host_name')['host_id'].count()
+
+top_hosts = hosts_with_multiple_listings.nlargest(10)
+
+top_hosts_fig = px.bar(
+    top_hosts,
+    x=top_hosts.values,
+    y=top_hosts.index,
+    orientation='h',
+    color_discrete_sequence=[colors['accent']],
+)
+
+top_hosts_fig.update_layout(
+    title={
+        'text': 'Top hosts',
+        **style['title']
+    },
+    xaxis_title={
+        'text': 'Number of listings',
+        **style['axis_title']
+    },
+    yaxis_title={
+        'text': 'Host name',
+        **style['axis_title']
+    },
+    yaxis_range=[top_hosts.index[-1], top_hosts.index[0]],
+    margin=dict(t=100),
+    plot_bgcolor=colors['background'],
+    paper_bgcolor=colors['background'],
+)
+
+
 # Define the app layout
 app.layout = html.Div(style=style['page'], children=[
     html.Div([
@@ -271,6 +303,30 @@ app.layout = html.Div(style=style['page'], children=[
         dcc.Graph(
             id='percentage_of_available_listings_from_each_neighbourhood_group',
             figure=percentage_of_available_listings_from_each_neighbourhood_group_fig,
+            style=style['graph']
+        ),
+    ]),
+    html.Div([
+        html.H2(
+            children='Hosts',
+            style=style['h2']
+        )
+    ]),
+    html.Div([
+        html.H3(
+            children='Top hosts',
+            style=style['h3']
+        ),
+        html.P(
+            children='The top 10 hosts are shown in the graph below. '
+                     'The host with the most listings are followed by David and Michael.',
+            style=style['p']
+        ),
+    ]),
+    html.Div([
+        dcc.Graph(
+            id='top_hosts',
+            figure=top_hosts_fig,
             style=style['graph']
         ),
     ]),
