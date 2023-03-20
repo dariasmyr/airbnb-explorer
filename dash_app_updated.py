@@ -2,8 +2,8 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 import plotly.express as px
-import plotly.graph_objects as go
-from dash import Dash, dcc, html
+import pandas as pd
+from dash import Dash, dcc, html, Input, Output
 from modules.database_repository import Database
 import dash_bootstrap_components as dbc
 
@@ -265,14 +265,67 @@ top_most_reviewed_listings_fig.update_layout(
 
 mean_price_per_neighbourhood_group = df.groupby(['neighbourhood_group', 'last_review', 'room_type'])[
     'price'].mean().reset_index()
-mean_price_per_neighbourhood_group = mean_price_per_neighbourhood_group[
-    mean_price_per_neighbourhood_group['last_review'] >= '2016-01-01']
+mean_price_per_neighbourhood_group['last_review'] = pd.to_datetime(mean_price_per_neighbourhood_group['last_review'])
+mean_price_per_neighbourhood_group = mean_price_per_neighbourhood_group.set_index('last_review')
 
-mean_price_per_neighbourhood_group_fig = px.line(
-    mean_price_per_neighbourhood_group,
-    x='last_review',
-    y='price',
+# resample the data to group by month and calculate the mean price
+mean_price_per_neighbourhood_group = mean_price_per_neighbourhood_group.groupby(
+    ['neighbourhood_group', 'room_type']).resample('Y').mean().reset_index()
+
+
+@app.callback(
+    Output('mean_price_per_neighbourhood_group_fig', 'figure'),
+    Input('room_type_dropdown', 'value')
+)
+def update_plot(room_type):
+    filtered_df = mean_price_per_neighbourhood_group[mean_price_per_neighbourhood_group['room_type'] == room_type]
+    fig = px.line(
+        filtered_df,
+        x='last_review',
+        y='price',
+        color='neighbourhood_group',
+        color_discrete_map={
+            'Manhattan': 'blue',
+            'Brooklyn': 'green',
+            'Queens': 'red',
+            'Staten Island': 'purple',
+            'Bronx': 'orange'
+        },
+    )
+    fig.update_layout(
+        title={
+            'text': f'Mean price per neighbourhood group for {room_type} rooms',
+            **style['title']
+        },
+        xaxis_title={
+            'text': 'Last review',
+            **style['axis_title']
+        },
+        yaxis_title={
+            'text': 'Price',
+            **style['axis_title']
+        },
+        margin=dict(t=100),
+        plot_bgcolor=colors['background'],
+        paper_bgcolor=colors['background'],
+    )
+    return fig
+
+
+# Define the average data for each neighborhood group
+average_data = df.groupby(['neighbourhood_group', 'neighbourhood']).mean().reset_index()
+
+# Filter the data to only include NYC neighborhoods and the average data
+nyc_data = average_data[average_data['neighbourhood_group'].isin(['Manhattan', 'Brooklyn', 'Queens', 'Staten Island', 'Bronx'])].copy()
+
+# Create a scatter map that shows only NYC neighborhoods and this data
+nyc_map = px.scatter_mapbox(
+    nyc_data,
+    lat='latitude',
+    lon='longitude',
+    size='price',
     color='neighbourhood_group',
+    hover_name='neighbourhood',
     color_discrete_map={
         'Manhattan': 'blue',
         'Brooklyn': 'green',
@@ -280,25 +333,17 @@ mean_price_per_neighbourhood_group_fig = px.line(
         'Staten Island': 'purple',
         'Bronx': 'orange'
     },
+    size_max=15,
+    center={'lat': 40.7128, 'lon': -74.0060},
+    opacity=0.7,
+    zoom=10,
 )
 
-mean_price_per_neighbourhood_group_fig.update_layout(
-    title={
-        'text': 'Mean price per neighbourhood group',
-        **style['title']
-    },
-    xaxis_title={
-        'text': 'Last review',
-        **style['axis_title']
-    },
-    yaxis_title={
-        'text': 'Price',
-        **style['axis_title']
-    },
-    margin=dict(t=100),
-    plot_bgcolor=colors['background'],
-    paper_bgcolor=colors['background'],
+nyc_map.update_layout(
+    mapbox_style="open-street-map",
+    margin={"r": 0, "t": 0, "l": 0, "b": 0},
 )
+
 
 app.layout = html.Div(style=style['page'], children=[
     html.Div([
@@ -312,6 +357,30 @@ app.layout = html.Div(style=style['page'], children=[
                      'By analyzing data on Airbnb listings, this project helps users find the perfect rental for '
                      'their needs.',
             style=style['p']
+        ),
+    ]),
+    html.Div([
+        html.H2(
+            children='Map',
+            style=style['h2']
+        ),
+        html.H3(
+            children='Airbnb listings in New York City',
+            style=style['h3']
+        ),
+        html.P(
+            children='The map below shows the location of all Airbnb listings in New York City. '
+                     'The size of the marker indicates the price of the listing. '
+                     'The colour of the marker indicates the neighbourhood group the listing is in. '
+                     'Hovering over the marker shows more information about the listing.',
+            style=style['p']
+        ),
+    ]),
+    html.Div([
+        dcc.Graph(
+            id='nyc_map',
+            figure=nyc_map,
+            style=style['graph']
         ),
     ]),
     html.Div([
@@ -355,6 +424,29 @@ app.layout = html.Div(style=style['page'], children=[
         dcc.Graph(
             id='correlation_with_price',
             figure=correlation_with_price_fig,
+            style=style['graph']
+        ),
+    ]),
+    html.Div([
+        html.H3(
+            children='Price dynamics',
+            style=style['h3']
+        ),
+        html.P(
+            children='The price dynamics of listings in each neighbourhood group per year are shown in '
+                     'the graph below.',
+            style=style['p']
+        ),
+    ]),
+    html.Div([
+        dcc.Dropdown(
+            id='room_type_dropdown',
+            options=[{'label': room_type, 'value': room_type} for room_type in df['room_type'].unique()],
+            value=df['room_type'].unique()[0],
+            style=style['dropdown']
+        ),
+        dcc.Graph(
+            id='mean_price_per_neighbourhood_group_fig',
             style=style['graph']
         ),
     ]),
@@ -428,33 +520,6 @@ app.layout = html.Div(style=style['page'], children=[
         dcc.Graph(
             id='top_10_most_reviewed_listings',
             figure=top_most_reviewed_listings_fig,
-            style=style['graph']
-        ),
-    ]),
-    html.Div([
-        html.H3(
-            children='Price dynamics',
-            style=style['h3']
-        ),
-        html.P(
-            children='The price dynamics of listings in each neighbourhood group from 2016 to 2019 are shown in '
-                     'the graph below. '
-                     'The price of listings in Manhattan has increased the most, followed by Brooklyn and '
-                     'Queens. '
-                     'The price of listings in Bronx has decreased the most, followed by Staten Island.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Dropdown(
-            id='room_type_dropdown',
-            options=[{'label': room_type, 'value': room_type} for room_type in df['room_type'].unique()],
-            value=df['room_type'].unique()[0],
-            style=style['dropdown']
-        ),
-        dcc.Graph(
-            id='mean_price_per_neighbourhood_group_fig',
-            figure=mean_price_per_neighbourhood_group_fig,
             style=style['graph']
         ),
     ])
