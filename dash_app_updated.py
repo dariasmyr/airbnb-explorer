@@ -24,6 +24,13 @@ colors = {
     'background': '#ffffff',
     'text': '#444444',
     'accent': '#008080',
+    'neighbourhood_group': {
+        'Manhattan': 'blue',
+        'Brooklyn': 'green',
+        'Queens': 'red',
+        'Staten Island': 'purple',
+        'Bronx': 'orange'
+    }
 }
 
 style = {
@@ -235,13 +242,7 @@ top_most_reviewed_listings_fig = px.scatter(
     size='number_of_reviews',
     color='neighbourhood_group',
     hover_name='name',
-    color_discrete_map={
-        'Manhattan': 'blue',
-        'Brooklyn': 'green',
-        'Queens': 'red',
-        'Staten Island': 'purple',
-        'Bronx': 'orange'
-    },
+    color_discrete_map=colors['neighbourhood_group'],
     size_max=60,
 )
 
@@ -270,7 +271,7 @@ mean_price_per_neighbourhood_group = mean_price_per_neighbourhood_group.set_inde
 
 # resample the data to group by month and calculate the mean price
 mean_price_per_neighbourhood_group = mean_price_per_neighbourhood_group.groupby(
-    ['neighbourhood_group', 'room_type']).resample('Y').mean().reset_index()
+    ['neighbourhood_group', 'room_type']).resample('Y').mean(numeric_only=True).reset_index()
 
 
 @app.callback(
@@ -313,7 +314,7 @@ def update_plot(room_type):
 
 
 # Define the average data for each neighborhood group
-average_data = df.groupby(['neighbourhood_group', 'neighbourhood']).mean().reset_index()
+average_data = df.groupby(['neighbourhood_group', 'neighbourhood']).mean(numeric_only=True).reset_index()
 
 # Filter the data to only include NYC neighborhoods and the average data
 nyc_data = average_data[average_data['neighbourhood_group'].isin(['Manhattan', 'Brooklyn', 'Queens', 'Staten Island', 'Bronx'])].copy()
@@ -326,13 +327,7 @@ nyc_map = px.scatter_mapbox(
     size='price',
     color='neighbourhood_group',
     hover_name='neighbourhood',
-    color_discrete_map={
-        'Manhattan': 'blue',
-        'Brooklyn': 'green',
-        'Queens': 'red',
-        'Staten Island': 'purple',
-        'Bronx': 'orange'
-    },
+    color_discrete_map=colors['neighbourhood_group'],
     size_max=15,
     center={'lat': 40.7128, 'lon': -74.0060},
     opacity=0.7,
