@@ -2,6 +2,7 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 import plotly.express as px
+import plotly.graph_objects as go
 from dash import Dash, dcc, html
 from modules.database_repository import Database
 import dash_bootstrap_components as dbc
@@ -93,6 +94,9 @@ style = {
         'padding': '0px 0px 10px 20px'
     },
     'graph': {
+        'padding': '0px 20px 20px 20px'
+    },
+    'dropdown': {
         'padding': '0px 20px 20px 20px'
     }
 }
@@ -221,8 +225,81 @@ top_hosts_fig.update_layout(
     paper_bgcolor=colors['background'],
 )
 
+top_most_reviewed_listings = df.groupby(['neighbourhood_group', 'name', 'price'])['number_of_reviews'].sum(). \
+    sort_values(ascending=False).groupby('neighbourhood_group').head(3).reset_index()
 
-# Define the app layout
+top_most_reviewed_listings_fig = px.scatter(
+    top_most_reviewed_listings,
+    x='number_of_reviews',
+    y='price',
+    size='number_of_reviews',
+    color='neighbourhood_group',
+    hover_name='name',
+    color_discrete_map={
+        'Manhattan': 'blue',
+        'Brooklyn': 'green',
+        'Queens': 'red',
+        'Staten Island': 'purple',
+        'Bronx': 'orange'
+    },
+    size_max=60,
+)
+
+top_most_reviewed_listings_fig.update_layout(
+    title={
+        'text': 'Top 3 most reviewed listings in each neighbourhood group',
+        **style['title']
+    },
+    xaxis_title={
+        'text': 'Number of reviews',
+        **style['axis_title']
+    },
+    yaxis_title={
+        'text': 'Price',
+        **style['axis_title']
+    },
+    margin=dict(t=100),
+    plot_bgcolor=colors['background'],
+    paper_bgcolor=colors['background'],
+)
+
+mean_price_per_neighbourhood_group = df.groupby(['neighbourhood_group', 'last_review', 'room_type'])[
+    'price'].mean().reset_index()
+mean_price_per_neighbourhood_group = mean_price_per_neighbourhood_group[
+    mean_price_per_neighbourhood_group['last_review'] >= '2016-01-01']
+
+mean_price_per_neighbourhood_group_fig = px.line(
+    mean_price_per_neighbourhood_group,
+    x='last_review',
+    y='price',
+    color='neighbourhood_group',
+    color_discrete_map={
+        'Manhattan': 'blue',
+        'Brooklyn': 'green',
+        'Queens': 'red',
+        'Staten Island': 'purple',
+        'Bronx': 'orange'
+    },
+)
+
+mean_price_per_neighbourhood_group_fig.update_layout(
+    title={
+        'text': 'Mean price per neighbourhood group',
+        **style['title']
+    },
+    xaxis_title={
+        'text': 'Last review',
+        **style['axis_title']
+    },
+    yaxis_title={
+        'text': 'Price',
+        **style['axis_title']
+    },
+    margin=dict(t=100),
+    plot_bgcolor=colors['background'],
+    paper_bgcolor=colors['background'],
+)
+
 app.layout = html.Div(style=style['page'], children=[
     html.Div([
         html.H1(
@@ -330,6 +407,57 @@ app.layout = html.Div(style=style['page'], children=[
             style=style['graph']
         ),
     ]),
+    html.Div([
+        html.H2(
+            children='Listings',
+            style=style['h2']
+        )
+    ]),
+    html.Div([
+        html.H3(
+            children='Top 10 most reviewed listings in each neighbourhood group',
+            style=style['h3']
+        ),
+        html.P(
+            children='The top 10 most reviewed listings in each neighbourhood group are shown in the graph below. '
+                     'The most reviewed listings are all located in Manhattan.',
+            style=style['p']
+        ),
+    ]),
+    html.Div([
+        dcc.Graph(
+            id='top_10_most_reviewed_listings',
+            figure=top_most_reviewed_listings_fig,
+            style=style['graph']
+        ),
+    ]),
+    html.Div([
+        html.H3(
+            children='Price dynamics',
+            style=style['h3']
+        ),
+        html.P(
+            children='The price dynamics of listings in each neighbourhood group from 2016 to 2019 are shown in '
+                     'the graph below. '
+                     'The price of listings in Manhattan has increased the most, followed by Brooklyn and '
+                     'Queens. '
+                     'The price of listings in Bronx has decreased the most, followed by Staten Island.',
+            style=style['p']
+        ),
+    ]),
+    html.Div([
+        dcc.Dropdown(
+            id='room_type_dropdown',
+            options=[{'label': room_type, 'value': room_type} for room_type in df['room_type'].unique()],
+            value=df['room_type'].unique()[0],
+            style=style['dropdown']
+        ),
+        dcc.Graph(
+            id='mean_price_per_neighbourhood_group_fig',
+            figure=mean_price_per_neighbourhood_group_fig,
+            style=style['graph']
+        ),
+    ])
 ])
 
 # Run the app
