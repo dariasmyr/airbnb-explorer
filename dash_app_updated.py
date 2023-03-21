@@ -13,7 +13,11 @@ external_stylesheets = [
 ]
 
 # Initialize the app
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+app = Dash(__name__, external_stylesheets=external_stylesheets, meta_tags=[{'name': 'viewport',
+                                                                            'content': 'width=device-width, '
+                                                                                       'initial-scale=1.0, '
+                                                                                       'maximum-scale=1.2, '
+                                                                                       'minimum-scale=0.5,'}])
 
 # Initialize the database connection
 database = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
@@ -35,9 +39,6 @@ colors = {
 
 style = {
     'page': {
-        'margin': '40px 200px 0px 200px',
-        'maxWidth': '1200px',
-        'padding': '0px 0px 0px 0px',
         'backgroundColor': colors['background'],
         'boxShadow': '0px 0px 20px 0px rgba(0,0,0,0.05)',
         'border-radius': '20px',
@@ -101,7 +102,9 @@ style = {
         'padding': '0px 0px 10px 20px'
     },
     'graph': {
-        'padding': '0px 20px 20px 20px'
+        'padding': '0px 20px 20px 20px',
+        'width': '100%',
+        'height': '400px'
     },
     'dropdown': {
         'padding': '0px 20px 20px 20px'
@@ -122,7 +125,7 @@ mean_price_per_neighbourhood_fig = px.bar(
 
 mean_price_per_neighbourhood_fig.update_layout(
     title={
-        'text': 'Average price of Airbnb listings in each neighbourhood group',
+        'text': 'Average price',
         **style['title']
     },
     xaxis_title={
@@ -183,7 +186,7 @@ percentage_of_available_listings_from_each_neighbourhood_group_fig = px.bar(
 
 percentage_of_available_listings_from_each_neighbourhood_group_fig.update_layout(
     title={
-        'text': 'Percentage of available listings from each neighbourhood group',
+        'text': 'Available listings',
         **style['title']
     },
     xaxis_title={
@@ -248,7 +251,7 @@ top_most_reviewed_listings_fig = px.scatter(
 
 top_most_reviewed_listings_fig.update_layout(
     title={
-        'text': 'Top 3 most reviewed listings in each neighbourhood group',
+        'text': 'Top 3 most reviewed listings',
         **style['title']
     },
     xaxis_title={
@@ -262,6 +265,7 @@ top_most_reviewed_listings_fig.update_layout(
     margin=dict(t=100),
     plot_bgcolor=colors['background'],
     paper_bgcolor=colors['background'],
+    showlegend=False
 )
 
 mean_price_per_neighbourhood_group = df.groupby(['neighbourhood_group', 'last_review', 'room_type'])[
@@ -295,7 +299,7 @@ def update_plot(room_type):
     )
     fig.update_layout(
         title={
-            'text': f'Mean price per neighbourhood group for {room_type} rooms',
+            'text': 'Price dynamics',
             **style['title']
         },
         xaxis_title={
@@ -309,6 +313,7 @@ def update_plot(room_type):
         margin=dict(t=100),
         plot_bgcolor=colors['background'],
         paper_bgcolor=colors['background'],
+        showlegend=False
     )
     return fig
 
@@ -317,7 +322,8 @@ def update_plot(room_type):
 average_data = df.groupby(['neighbourhood_group', 'neighbourhood']).mean(numeric_only=True).reset_index()
 
 # Filter the data to only include NYC neighborhoods and the average data
-nyc_data = average_data[average_data['neighbourhood_group'].isin(['Manhattan', 'Brooklyn', 'Queens', 'Staten Island', 'Bronx'])].copy()
+nyc_data = average_data[
+    average_data['neighbourhood_group'].isin(['Manhattan', 'Brooklyn', 'Queens', 'Staten Island', 'Bronx'])].copy()
 
 # Create a scatter map that shows only NYC neighborhoods and this data
 nyc_map = px.scatter_mapbox(
@@ -337,187 +343,186 @@ nyc_map = px.scatter_mapbox(
 nyc_map.update_layout(
     mapbox_style="open-street-map",
     margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    showlegend=False,
 )
 
-
-app.layout = html.Div(style=style['page'], children=[
-    html.Div([
-        html.H1(
-            children='Welcome to the Airbnb Explorer!',
-            style=style['h1']
-        ),
-        html.P(
-            children='The Airbnb Explorer project aims to provide users with insights into Airbnb listings in New '
-                     'York City. '
-                     'By analyzing data on Airbnb listings, this project helps users find the perfect rental for '
-                     'their needs.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        html.H2(
-            children='Map',
-            style=style['h2']
-        ),
-        html.H3(
-            children='Airbnb listings in New York City',
-            style=style['h3']
-        ),
-        html.P(
-            children='The map below shows the location of all Airbnb listings in New York City. '
-                     'The size of the marker indicates the price of the listing. '
-                     'The colour of the marker indicates the neighbourhood group the listing is in. '
-                     'Hovering over the marker shows more information about the listing.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Graph(
-            id='nyc_map',
-            figure=nyc_map,
-            style=style['graph']
-        ),
-    ]),
-    html.Div([
-        html.H2(
-            children='Price',
-            style=style['h2']
-        ),
-        html.H3(
-            children='Mean price per neighbourhood group',
-            style=style['h3']
-        ),
-        html.P(
-            children='The average price of Airbnb listings in each neighbourhood group is shown in the graph below. '
-                     'The most expensive neighbourhood group is Manhattan, followed by Brooklyn and Queens. '
-                     'The cheapest neighbourhood group is Bronx.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Graph(
-            id='mean_price_per_neighbourhood',
-            figure=mean_price_per_neighbourhood_fig,
-            style=style['graph']
-        ),
-    ]),
-    html.Div([
-        html.H3(
-            children='Correlation with price',
-            style=style['h3']
-        ),
-        html.P(
-            children='The correlation between the price of an Airbnb listing and other features is shown in the '
-                     'graph below. '
-                     'The most important features for determining the price of an Airbnb listing are the number '
-                     'of reviews, the availability of the listing, and the number of reviews per month. '
-                     'The least important feature is the minimum number of nights.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Graph(
-            id='correlation_with_price',
-            figure=correlation_with_price_fig,
-            style=style['graph']
-        ),
-    ]),
-    html.Div([
-        html.H3(
-            children='Price dynamics',
-            style=style['h3']
-        ),
-        html.P(
-            children='The price dynamics of listings in each neighbourhood group per year are shown in '
-                     'the graph below.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Dropdown(
-            id='room_type_dropdown',
-            options=[{'label': room_type, 'value': room_type} for room_type in df['room_type'].unique()],
-            value=df['room_type'].unique()[0],
-            style=style['dropdown']
-        ),
-        dcc.Graph(
-            id='mean_price_per_neighbourhood_group_fig',
-            style=style['graph']
-        ),
-    ]),
-    html.Div([
-        html.H2(
-            children='Availability',
-            style=style['h2']
-        ),
-        html.H3(
-            children='Percentage of available listings from each neighbourhood group',
-            style=style['h3']
-        ),
-        html.P(
-            children='The percentage of available listings from each neighbourhood group is shown in the graph '
-                     'below. '
-                     'The neighbourhood group with the highest percentage of available listings is Staten '
-                     'Island, followed by Bronx and Queens. '
-                     'The neighbourhood group with the lowest percentage of available listings is Manhattan.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Graph(
-            id='percentage_of_available_listings_from_each_neighbourhood_group',
-            figure=percentage_of_available_listings_from_each_neighbourhood_group_fig,
-            style=style['graph']
-        ),
-    ]),
-    html.Div([
-        html.H2(
-            children='Hosts',
-            style=style['h2']
-        )
-    ]),
-    html.Div([
-        html.H3(
-            children='Top hosts',
-            style=style['h3']
-        ),
-        html.P(
-            children='The top 10 hosts are shown in the graph below. '
-                     'The host with the most listings are followed by David and Michael.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Graph(
-            id='top_hosts',
-            figure=top_hosts_fig,
-            style=style['graph']
-        ),
-    ]),
-    html.Div([
-        html.H2(
-            children='Listings',
-            style=style['h2']
-        )
-    ]),
-    html.Div([
-        html.H3(
-            children='Top 10 most reviewed listings in each neighbourhood group',
-            style=style['h3']
-        ),
-        html.P(
-            children='The top 10 most reviewed listings in each neighbourhood group are shown in the graph below. '
-                     'The most reviewed listings are all located in Manhattan.',
-            style=style['p']
-        ),
-    ]),
-    html.Div([
-        dcc.Graph(
-            id='top_10_most_reviewed_listings',
-            figure=top_most_reviewed_listings_fig,
-            style=style['graph']
-        ),
-    ])
+app.layout = dbc.Container(style=style['page'], children=[
+    dbc.Row([
+        dbc.Col([
+            html.H1(
+                children='Welcome to the Airbnb Explorer!',
+                style=style['h1']
+            ),
+            html.P(
+                children='The Airbnb Explorer project aims to provide users with insights into Airbnb listings in New '
+                         'York City. '
+                         'By analyzing data on Airbnb listings, this project helps users find the perfect rental for '
+                         'their needs.',
+                style=style['p']
+            ),
+        ], width={'size': 12}),
+    ], justify='left'),
+    dbc.Row([
+        dbc.Col([
+            html.H2(
+                children='Map',
+                style=style['h2']
+            ),
+            html.H3(
+                children='Airbnb listings in New York City',
+                style=style['h3']
+            ),
+            html.P(
+                children='The map below shows the location of all Airbnb listings in New York City. '
+                         'The size of the marker indicates the price of the listing. '
+                         'The colour of the marker indicates the neighbourhood group the listing is in. '
+                         'Hovering over the marker shows more information about the listing.',
+                style=style['p']
+            ),
+            dcc.Graph(
+                id='nyc_map',
+                figure=nyc_map
+            ),
+        ], width={'size': 12})
+    ], justify='left'),
+    dbc.Row([
+        dbc.Col([
+            html.H2(
+                children='Price',
+                style=style['h2']
+            ),
+        ], width={'size': 12})
+    ], justify='left'),
+    dbc.Row([
+        dbc.Col([
+            html.H3(
+                children='Mean price per neighbourhood group',
+                style=style['h3']
+            ),
+            html.P(
+                children='The average price of Airbnb listings in each neighbourhood group is shown in the graph '
+                         'below. '
+                         'The most expensive neighbourhood group is Manhattan, followed by Brooklyn and Queens. '
+                         'The cheapest neighbourhood group is Bronx.',
+                style=style['p']
+            ),
+            dcc.Graph(
+                id='mean_price_per_neighbourhood',
+                figure=mean_price_per_neighbourhood_fig,
+                style=style['graph']
+            ),
+        ], xs=10, sm=8, md=5, lg=6, xl=5),
+        dbc.Col([
+            html.H3(
+                children='Correlation with price',
+                style=style['h3']
+            ),
+            html.P(
+                children='The correlation between the price of an Airbnb listing and other features is shown in the '
+                         'graph below. '
+                         'The most important features for determining the price of an Airbnb listing are the number '
+                         'of reviews, the availability of the listing, and the number of reviews per month. '
+                         'The least important feature is the minimum number of nights.',
+                style=style['p']
+            ),
+            dcc.Graph(
+                id='correlation_with_price',
+                figure=correlation_with_price_fig,
+                style=style['graph']
+            ),
+        ], xs=10, sm=8, md=5, lg=6, xl=5),
+    ], justify='left'),
+    dbc.Row([
+        dbc.Col([
+            html.H3(
+                children='Price dynamics',
+                style=style['h3']
+            ),
+            html.P(
+                children='The price dynamics of listings in each neighbourhood group per year are shown in '
+                         'the graph below.',
+                style=style['p']
+            ),
+            dcc.Dropdown(
+                id='room_type_dropdown',
+                options=[{'label': room_type, 'value': room_type} for room_type in df['room_type'].unique()],
+                value=df['room_type'].unique()[0],
+                style=style['dropdown'],
+                clearable=False
+            ),
+            dcc.Graph(
+                id='mean_price_per_neighbourhood_group_fig',
+                style=style['graph']
+            ),
+        ]),
+    ], justify='left'),
+    dbc.Row([
+        dbc.Col([
+            html.H2(
+                children='Availability',
+                style=style['h2']
+            ),
+            html.H3(
+                children='Percentage of available listings',
+                style=style['h3']
+            ),
+            html.P(
+                children='The percentage of available listings from each neighbourhood group is shown in the graph '
+                         'below. '
+                         'The neighbourhood group with the highest percentage of available listings is Staten '
+                         'Island, followed by Bronx and Queens.',
+                style=style['p']
+            ),
+            dcc.Graph(
+                id='percentage_of_available_listings_from_each_neighbourhood_group',
+                figure=percentage_of_available_listings_from_each_neighbourhood_group_fig,
+                style=style['graph']
+            ),
+        ], xs=10, sm=8, md=5, lg=6, xl=5),
+        dbc.Col([
+            html.H2(
+                children='Hosts',
+                style=style['h2']
+            ),
+            html.H3(
+                children='Top hosts with most listings',
+                style=style['h3']
+            ),
+            html.P(
+                children='The top 10 hosts with most listings are shown in the graph below. '
+                         'The host with the most listings are followed by David and Michael having 355 and 309 '
+                         'listings respectively. Anna finishes the list having 159 listings.',
+                style=style['p']
+            ),
+            dcc.Graph(
+                id='top_hosts',
+                figure=top_hosts_fig,
+                style=style['graph']
+            ),
+        ], xs=10, sm=8, md=5, lg=6, xl=5),
+    ], justify='left', align='top'),
+    dbc.Row([
+        dbc.Col([
+            html.H2(
+                children='Listings',
+                style=style['h2']
+            ),
+            html.H3(
+                children='Top 10 most reviewed listings in each neighbourhood group',
+                style=style['h3']
+            ),
+            html.P(
+                children='The top 10 most reviewed listings in each neighbourhood group are shown in the graph below. '
+                         'The most reviewed listings are all located in Manhattan.',
+                style=style['p']
+            ),
+            dcc.Graph(
+                id='top_10_most_reviewed_listings',
+                figure=top_most_reviewed_listings_fig,
+                style=style['graph']
+            ),
+        ])
+    ], justify='left'),
 ])
 
 # Run the app
