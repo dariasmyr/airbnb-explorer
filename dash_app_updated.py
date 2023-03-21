@@ -1,6 +1,3 @@
-# Run this app with `python dash_app.py` and
-# visit http://127.0.0.1:8050/ in your web browser.
-
 import plotly.express as px
 import pandas as pd
 from dash import Dash, dcc, html, Input, Output
@@ -235,39 +232,6 @@ top_hosts_fig.update_layout(
     paper_bgcolor=colors['background'],
 )
 
-top_most_reviewed_listings = df.groupby(['neighbourhood_group', 'name', 'price'])['number_of_reviews'].sum(). \
-    sort_values(ascending=False).groupby('neighbourhood_group').head(3).reset_index()
-
-top_most_reviewed_listings_fig = px.scatter(
-    top_most_reviewed_listings,
-    x='number_of_reviews',
-    y='price',
-    size='number_of_reviews',
-    color='neighbourhood_group',
-    hover_name='name',
-    color_discrete_map=colors['neighbourhood_group'],
-    size_max=60,
-)
-
-top_most_reviewed_listings_fig.update_layout(
-    title={
-        'text': 'Top 3 most reviewed listings',
-        **style['title']
-    },
-    xaxis_title={
-        'text': 'Number of reviews',
-        **style['axis_title']
-    },
-    yaxis_title={
-        'text': 'Price',
-        **style['axis_title']
-    },
-    margin=dict(t=100),
-    plot_bgcolor=colors['background'],
-    paper_bgcolor=colors['background'],
-    showlegend=False
-)
-
 mean_price_per_neighbourhood_group = df.groupby(['neighbourhood_group', 'last_review', 'room_type'])[
     'price'].mean().reset_index()
 mean_price_per_neighbourhood_group['last_review'] = pd.to_datetime(mean_price_per_neighbourhood_group['last_review'])
@@ -282,20 +246,14 @@ mean_price_per_neighbourhood_group = mean_price_per_neighbourhood_group.groupby(
     Output('mean_price_per_neighbourhood_group_fig', 'figure'),
     Input('room_type_dropdown', 'value')
 )
-def update_plot(room_type):
+def update_mean_price_per_neighbourhood_group(room_type):
     filtered_df = mean_price_per_neighbourhood_group[mean_price_per_neighbourhood_group['room_type'] == room_type]
     fig = px.line(
         filtered_df,
         x='last_review',
         y='price',
         color='neighbourhood_group',
-        color_discrete_map={
-            'Manhattan': 'blue',
-            'Brooklyn': 'green',
-            'Queens': 'red',
-            'Staten Island': 'purple',
-            'Bronx': 'orange'
-        },
+        color_discrete_map=colors['neighbourhood_group'],
     )
     fig.update_layout(
         title={
@@ -325,26 +283,76 @@ average_data = df.groupby(['neighbourhood_group', 'neighbourhood']).mean(numeric
 nyc_data = average_data[
     average_data['neighbourhood_group'].isin(['Manhattan', 'Brooklyn', 'Queens', 'Staten Island', 'Bronx'])].copy()
 
-# Create a scatter map that shows only NYC neighborhoods and this data
-nyc_map = px.scatter_mapbox(
-    nyc_data,
-    lat='latitude',
-    lon='longitude',
-    size='price',
-    color='neighbourhood_group',
-    hover_name='neighbourhood',
-    color_discrete_map=colors['neighbourhood_group'],
-    size_max=15,
-    center={'lat': 40.7128, 'lon': -74.0060},
-    opacity=0.7,
-    zoom=10,
-)
 
-nyc_map.update_layout(
-    mapbox_style="open-street-map",
-    margin={"r": 0, "t": 0, "l": 0, "b": 0},
-    showlegend=False,
+@app.callback(
+    Output('nyc_map', 'figure'),
+    Input('nyc_map_neighbourhood_group_dropdown', 'value')
 )
+def update_nyc_map(neighbourhood_group):
+    filtered_df = nyc_data[nyc_data['neighbourhood_group'] == neighbourhood_group]
+    fig = px.scatter_mapbox(
+        filtered_df,
+        lat='latitude',
+        lon='longitude',
+        size='price',
+        color='neighbourhood_group',
+        hover_name='neighbourhood',
+        color_discrete_map=colors['neighbourhood_group'],
+        size_max=15,
+        center={'lat': 40.7128, 'lon': -74.0060},
+        opacity=0.7,
+        zoom=10,
+    )
+    fig.update_layout(
+        plot_bgcolor=colors['background'],
+        paper_bgcolor=colors['background'],
+        showlegend=False,
+        mapbox_style="open-street-map",
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+    return fig
+
+
+top_most_reviewed_listings = df.groupby(['neighbourhood_group', 'name', 'price'])['number_of_reviews'].sum(). \
+    sort_values(ascending=False).groupby('neighbourhood_group').head(3).reset_index()
+
+
+@app.callback(
+    Output('top_most_reviewed_listings_fig', 'figure'),
+    Input('most_reviewed_listings_neighbourhood_group_dropdown', 'value')
+)
+def update_top_most_reviewed_listings(neighbourhood_group):
+    filtered_df = top_most_reviewed_listings[top_most_reviewed_listings['neighbourhood_group'] == neighbourhood_group]
+    fig = px.scatter(
+        filtered_df,
+        x='number_of_reviews',
+        y='price',
+        size='number_of_reviews',
+        color='neighbourhood_group',
+        hover_name='name',
+        color_discrete_map=colors['neighbourhood_group'],
+        size_max=60,
+    )
+    fig.update_layout(
+        title={
+            'text': 'Top 3 most reviewed listings',
+            **style['title']
+        },
+        xaxis_title={
+            'text': 'Number of reviews',
+            **style['axis_title']
+        },
+        yaxis_title={
+            'text': 'Price',
+            **style['axis_title']
+        },
+        margin=dict(t=100),
+        plot_bgcolor=colors['background'],
+        paper_bgcolor=colors['background'],
+        showlegend=False
+    )
+    return fig
+
 
 app.layout = dbc.Container(style=style['page'], children=[
     dbc.Row([
@@ -379,9 +387,17 @@ app.layout = dbc.Container(style=style['page'], children=[
                          'Hovering over the marker shows more information about the listing.',
                 style=style['p']
             ),
+            dcc.Dropdown(
+                id='nyc_map_neighbourhood_group_dropdown',
+                options=[{'label': neighbourhood_group, 'value': neighbourhood_group}
+                         for neighbourhood_group in df['neighbourhood_group'].unique()],
+                value=df['neighbourhood_group'].unique()[0],
+                style=style['dropdown'],
+                clearable=False,
+            ),
             dcc.Graph(
                 id='nyc_map',
-                figure=nyc_map
+                style=style['graph']
             ),
         ], width={'size': 12})
     ], justify='left'),
@@ -448,7 +464,7 @@ app.layout = dbc.Container(style=style['page'], children=[
                 options=[{'label': room_type, 'value': room_type} for room_type in df['room_type'].unique()],
                 value=df['room_type'].unique()[0],
                 style=style['dropdown'],
-                clearable=False
+                clearable=False,
             ),
             dcc.Graph(
                 id='mean_price_per_neighbourhood_group_fig',
@@ -516,9 +532,16 @@ app.layout = dbc.Container(style=style['page'], children=[
                          'The most reviewed listings are all located in Manhattan.',
                 style=style['p']
             ),
+            dcc.Dropdown(
+                id='most_reviewed_listings_neighbourhood_group_dropdown',
+                options=[{'label': neighbourhood_group, 'value': neighbourhood_group}
+                         for neighbourhood_group in df['neighbourhood_group'].unique()],
+                value=df['neighbourhood_group'].unique()[0],
+                style=style['dropdown'],
+                clearable=False,
+            ),
             dcc.Graph(
-                id='top_10_most_reviewed_listings',
-                figure=top_most_reviewed_listings_fig,
+                id='top_most_reviewed_listings_fig',
                 style=style['graph']
             ),
         ])
