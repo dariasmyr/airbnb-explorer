@@ -17,9 +17,9 @@ app = Dash(
         {
             "name": "viewport",
             "content": "width=device-width, "
-            "initial-scale=1.0, "
-            "maximum-scale=1.2, "
-            "minimum-scale=0.5,",
+                       "initial-scale=1.0, "
+                       "maximum-scale=1.2, "
+                       "minimum-scale=0.5,",
         }
     ],
 )
@@ -147,6 +147,21 @@ correlation_with_price_fig.update_layout(
     paper_bgcolor=colors["background"],
 )
 
+parallel_coordinates_fig = px.parallel_coordinates(
+    df,
+    dimensions=numeric_cols,
+    color='price',
+    color_continuous_scale=px.colors.diverging.Tealrose,
+    color_continuous_midpoint=2,
+)
+
+parallel_coordinates_fig.update_layout(
+    title={"text": "Parallel coordinates", **style["title"]},
+    margin=dict(t=100),
+    plot_bgcolor=colors["background"],
+    paper_bgcolor=colors["background"],
+)
+
 percentage_of_available_listings_from_each_neighbourhood_group = (
     df.groupby("neighbourhood_group")["minimum_nights"]
     .apply(lambda x: (x >= 10).sum() / len(x) * 100)
@@ -224,7 +239,7 @@ mean_price_per_neighbourhood_group = (
 def update_mean_price_per_neighbourhood_group(room_type):
     filtered_df = mean_price_per_neighbourhood_group[
         mean_price_per_neighbourhood_group["room_type"] == room_type
-    ]
+        ]
     fig = px.line(
         filtered_df,
         x="last_review",
@@ -304,7 +319,7 @@ top_most_reviewed_listings = (
 def update_top_most_reviewed_listings(neighbourhood_group):
     filtered_df = top_most_reviewed_listings[
         top_most_reviewed_listings["neighbourhood_group"] == neighbourhood_group
-    ]
+        ]
     fig = px.scatter(
         filtered_df,
         x="number_of_reviews",
@@ -339,10 +354,12 @@ app.layout = dbc.Container(
                             style=style["h1"],
                         ),
                         html.P(
-                            children="The Airbnb Explorer project aims to provide users with insights into Airbnb listings in New "
-                            "York City. "
-                            "By analyzing data on Airbnb listings, this project helps users find the perfect rental for "
-                            "their needs.",
+                            children="The Airbnb Explorer project aims to provide users with insights into Airbnb "
+                                     "listings in New "
+                                     "York City. "
+                                     "By analyzing data on Airbnb listings, this project helps users find the perfect rental "
+                                     "for "
+                                     "their needs.",
                             style=style["p"],
                         ),
                     ],
@@ -362,9 +379,9 @@ app.layout = dbc.Container(
                         ),
                         html.P(
                             children="The map below shows the location of all Airbnb listings in New York City. "
-                            "The size of the marker indicates the price of the listing. "
-                            "The colour of the marker indicates the neighbourhood group the listing is in. "
-                            "Hovering over the marker shows more information about the listing.",
+                                     "The size of the marker indicates the price of the listing. "
+                                     "The colour of the marker indicates the neighbourhood group the listing is in. "
+                                     "Hovering over the marker shows more information about the listing.",
                             style=style["p"],
                         ),
                         dcc.Dropdown(
@@ -409,10 +426,11 @@ app.layout = dbc.Container(
                             style=style["h3"],
                         ),
                         html.P(
-                            children="The average price of Airbnb listings in each neighbourhood group is shown in the graph "
-                            "below. "
-                            "The most expensive neighbourhood group is Manhattan, followed by Brooklyn and Queens. "
-                            "The cheapest neighbourhood group is Bronx.",
+                            children="The average price of Airbnb listings in each neighbourhood group is shown in "
+                                     "the graph "
+                                     "below. "
+                                     "The most expensive neighbourhood group is Manhattan, followed by Brooklyn and Queens. "
+                                     "The cheapest neighbourhood group is Bronx.",
                             style=style["p"],
                         ),
                         dcc.Graph(
@@ -431,11 +449,14 @@ app.layout = dbc.Container(
                     [
                         html.H3(children="Correlation with price", style=style["h3"]),
                         html.P(
-                            children="The correlation between the price of an Airbnb listing and other features is shown in the "
-                            "graph below. "
-                            "The most important features for determining the price of an Airbnb listing are the number "
-                            "of reviews, the availability of the listing, and the number of reviews per month. "
-                            "The least important feature is the minimum number of nights.",
+                            children="The correlation between the price of an Airbnb listing and other features is "
+                                     "shown in the "
+                                     "graph below. "
+                                     "The most important features for determining the price of an Airbnb listing are "
+                                     "the number "
+                                     "of reviews, the availability of the listing, and the number of reviews per "
+                                     "month. "
+                                     "The least important feature is the minimum number of nights.",
                             style=style["p"],
                         ),
                         dcc.Graph(
@@ -456,11 +477,35 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
+[
+                        html.H3(children="Parallel correlation", style=style["h3"]),
+                        html.P(
+                            children="The correlation between the price of a listing and the other features is "
+                                     "shown in the "
+                                     "graph below. "
+                                     "The features are grouped into 3 categories: "
+                                     "location, property and host. "
+                                     "The correlation between the price and the features in each category is shown in "
+                                     "parallel. ",
+                            style=style["p"],
+                        ),
+                        dcc.Graph(
+                            id="parallel_coordinates_fig",
+                            figure=parallel_coordinates_fig,
+                            style=style["graph"],
+                        ),
+                    ],
+                ),
+            ], justify="left",
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
                     [
                         html.H3(children="Price dynamics", style=style["h3"]),
                         html.P(
                             children="The price dynamics of listings in each neighbourhood group per year are shown in "
-                            "the graph below.",
+                                     "the graph below.",
                             style=style["p"],
                         ),
                         dcc.Dropdown(
@@ -493,9 +538,9 @@ app.layout = dbc.Container(
                         ),
                         html.P(
                             children="The percentage of available listings from each neighbourhood group is shown in the graph "
-                            "below. "
-                            "The neighbourhood group with the highest percentage of available listings is Staten "
-                            "Island, followed by Bronx and Queens.",
+                                     "below. "
+                                     "The neighbourhood group with the highest percentage of available listings is Staten "
+                                     "Island, followed by Bronx and Queens.",
                             style=style["p"],
                         ),
                         dcc.Graph(
@@ -518,8 +563,8 @@ app.layout = dbc.Container(
                         ),
                         html.P(
                             children="The top 10 hosts with most listings are shown in the graph below. "
-                            "The host with the most listings are followed by David and Michael having 355 and 309 "
-                            "listings respectively. Anna finishes the list having 159 listings.",
+                                     "The host with the most listings are followed by David and Michael having 355 and 309 "
+                                     "listings respectively. Anna finishes the list having 159 listings.",
                             style=style["p"],
                         ),
                         dcc.Graph(
@@ -547,7 +592,7 @@ app.layout = dbc.Container(
                         ),
                         html.P(
                             children="The top 10 most reviewed listings in each neighbourhood group are shown in the graph below. "
-                            "The most reviewed listings are all located in Manhattan.",
+                                     "The most reviewed listings are all located in Manhattan.",
                             style=style["p"],
                         ),
                         dcc.Dropdown(
