@@ -105,10 +105,10 @@ class Predictor:
         if os.path.exists(self.DATASET_PATH):
             # Load the trained model from file
             self.rf_model = joblib.load(self.DATASET_PATH)
-            # print('Model loaded from file.')
+            print('Model loaded from file.')
         else:
             # Train the model
-            # print('Model not found. Training the model...')
+            print('Model not found. Training the model...')
             self.predict_price()
 
         # Create a dictionary of input features
@@ -127,15 +127,20 @@ class Predictor:
         input_df = pd.DataFrame([input_data])
 
         # One-hot encode categorical variables
-        # print('One-hot encoding categorical variables...')
+        print('One-hot encoding categorical variables...')
         input_df = pd.get_dummies(input_df, columns=['neighbourhood_group', 'neighbourhood', 'room_type'])
 
+        # Convert column names to string
+        input_df.columns = input_df.columns.astype(str)
+
         # Reorder columns to match training data
-        # print('Reordering columns...')
+        print('Reordering columns...')
         input_df = input_df.reindex(columns=self.X.columns, fill_value=0)
 
+        input_df = input_df.values
+
         # Predict the price using Random Forest Regression model
-        # print('Predicting price...')
+        print('Predicting price...')
         y_pred = self.rf_model.predict(input_df)
 
         # Return the predicted price

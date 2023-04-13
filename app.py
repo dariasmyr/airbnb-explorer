@@ -33,7 +33,7 @@ def get_metrics():
 
 def predict_price():
     predictor = Predictor()
-    predictor.predict_price()
+    predictor.predict_single_price('Manhattan', 'Harlem', 40.82085, -73.94025, 'Private room', 3, 0, 0, 1, 0)
 
 
 # clean_data()
