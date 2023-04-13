@@ -15,7 +15,7 @@ app = Flask(__name__, template_folder=PATH_TO_TEMPLATE, static_folder=PATH_TO_ST
 print(app.template_folder)
 print(app.static_folder)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/data_bak.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data/database_bak.sqlite3'
 db = SQLAlchemy(app)
 
 

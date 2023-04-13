@@ -25,7 +25,7 @@ app = Dash(
 )
 
 # Initialize the database connection
-database = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+database = Database("sqlite+pysqlite:///:/../data/database.sqlite3")
 database.connect()
 
 # Define the color scheme and shared visual properties

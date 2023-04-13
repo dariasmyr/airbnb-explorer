@@ -4,7 +4,7 @@ import joblib
 from IPython.core.display_functions import display
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-# from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -15,22 +15,20 @@ from modules.database_repository import Database
 
 class Predictor:
     def __init__(self):
-        self.db = Database("sqlite+pysqlite:///:/../data/data.sqlite3")
+        self.rf_model = None
+        self.db = Database("sqlite+pysqlite:///:/../data/database.sqlite3")
         self.db.connect()
         self.data = self.db.get_dataframe()
 
-        # Load and preprocess data
         self.data = self.data.drop(['id', 'name', 'host_id', 'host_name', 'last_review'], axis=1)
+        print(self.data.dtypes)
         self.data = pd.get_dummies(self.data, columns=['neighbourhood_group', 'neighbourhood', 'room_type'])
         self.data.columns = self.data.columns.astype(str)
+        print(self.data.dtypes)
 
         # Split the data into features and target
         self.X = self.data.drop(['price'], axis=1)
         self.y = self.data['price']
-
-        # Train Random Forest Regression model
-        self.rf_model = RandomForestRegressor()
-        self.rf_model.fit(self.X, self.y)
 
         self.DATASET_PATH = os.path.join(os.path.dirname(__file__), '../data/best_model.joblib')
 
@@ -38,63 +36,71 @@ class Predictor:
         # Split the data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.2, random_state=42)
 
-        # Convert feature names to strings
-        X_train.columns = X_train.columns.astype(str)
+        # Remove feature/column names
+        X_train = X_train.values
+        X_test = X_test.values
+        print(X_train.shape, X_test.shape)
 
         # Train and evaluate Linear Regression model
         lr_model = LinearRegression()
         lr_model.fit(X_train, y_train)
         lr_score = lr_model.score(X_test, y_test)
+        print('Linear Regression score: ', lr_score)
 
         # Train and evaluate Decision Tree Regression model
         dt_model = DecisionTreeRegressor()
         dt_model.fit(X_train, y_train)
         dt_score = dt_model.score(X_test, y_test)
+        print('Decision Tree Regression score: ', dt_score)
 
         # Train and evaluate Random Forest Regression model
         rf_model = RandomForestRegressor()
         rf_model.fit(X_train, y_train)
         rf_score = rf_model.score(X_test, y_test)
+        print('Random Forest Regression score: ', rf_score)
 
         # Compare the models and choose the best one
         scores = {'Linear Regression': lr_score, 'Decision Tree Regression': dt_score,
                   'Random Forest Regression': rf_score}
         best_model = max(scores, key=scores.get)
+        print('Best model: ', best_model)
 
         # Predict the prices using the best model
         if best_model == 'Linear Regression':
             y_pred = lr_model.predict(X_test)
-            joblib.dump(lr_model, self.DATASET_PATH)
+            joblib.dump(lr_model, self.DATASET_PATH)  # Updated file name
         elif best_model == 'Decision Tree Regression':
             y_pred = dt_model.predict(X_test)
-            joblib.dump(dt_model, self.DATASET_PATH)
+            joblib.dump(dt_model, self.DATASET_PATH)  # Updated file name
         elif best_model == 'Random Forest Regression':
             y_pred = rf_model.predict(X_test)
-            joblib.dump(rf_model, self.DATASET_PATH)
+            joblib.dump(rf_model, self.DATASET_PATH)  # Updated file name
 
             # Check if the trained model exists in the data folder
-            if os.path.exists('best_model.joblib'):
-                # Load the trained model from file
-                self.rf_model = joblib.load(self.DATASET_PATH)
-                # print('Model loaded from file.')
-            else:
-                # Wait for the file to be created
-                while not os.path.exists('best_model.joblib'):
-                    # print('Waiting for the model to be saved...')
-                    pass
-                # Print the mean squared error and the coefficient of determination
-                # print('Mean squared error: %.2f'
-                #      % mean_squared_error(y_test, y_pred))
-                # print('Coefficient of determination: %.2f'
-                #      % r2_score(y_test, y_pred))
+            model_saved = False
+            while not model_saved:
+                print('Waiting for the model to be saved...')
+                if os.path.exists(self.DATASET_PATH):
+                    # Load the trained model from file
+                    self.rf_model = joblib.load(self.DATASET_PATH)  # Updated file name
+                    print('Model loaded from file.')
+                    model_saved = True
 
-                # print('Best model: ', best_model)
+                # Print the mean squared error and the coefficient of determination
+                print('Mean squared error: %.2f'
+                      % mean_squared_error(y_test, y_pred))
+                print('Coefficient of determination: %.2f'
+                      % r2_score(y_test, y_pred))
+
+                print('Best model: ', best_model)
 
                 # Return the predicted prices and the best model
                 return y_pred, best_model
 
-    def predict_single_price(self, neighbourhood_group, neighbourhood, latitude, longitude, room_type, minimum_nights,
-                             number_of_reviews, reviews_per_month, calculated_host_listings_count, availability_365):
+    def predict_single_price(self, neighbourhood_group, neighbourhood, latitude, longitude, room_type,
+                             minimum_nights,
+                             number_of_reviews, reviews_per_month, calculated_host_listings_count,
+                             availability_365):
         # Check if the trained model exists in the data folder
         if os.path.exists(self.DATASET_PATH):
             # Load the trained model from file

@@ -1,6 +1,7 @@
 from modules.cleaner import DataFormatter
 from modules.metrics import Metrics
 from modules.predictor import Predictor
+from modules.database_repository import Database
 
 
 def clean_data():
@@ -8,7 +9,13 @@ def clean_data():
     data_formatter.get_datatypes()
     data_formatter.drop_missing_values()
     _cleaned_data = data_formatter.save_cleared_data('data/cleared_data.csv')
-    return _cleaned_data
+
+
+def create_database():
+    db_url = 'sqlite+pysqlite:///data/database.sqlite3'
+    database_repository = Database(db_url)
+    database_repository.create_database()
+    database_repository.save_data_to_db('data/cleared_data.csv')
 
 
 def get_metrics():
@@ -26,8 +33,10 @@ def get_metrics():
 
 def predict_price():
     predictor = Predictor()
-    predictor.create_form()
+    predictor.predict_price()
 
 
-get_metrics()
-# predict_price()
+# clean_data()
+# create_database()
+# get_metrics()
+predict_price()

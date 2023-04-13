@@ -33,27 +33,23 @@ class Database:
         try:
             self.conn = self.engine.connect()
         except Exception as e:
-            print("An error occurred while connecting to database. Please see the logs for details.")
+            print("An error occurred while connecting to the database. Please see the logs for details.")
             logging.error(e)
             return
 
     def create_database(self):
         try:
-            # check if the database already exists
-            if os.path.exists(self.engine.url.database):
-                print("Database already exists.")
-                return
-            else:
-                # create a new database
-                self.conn.execute("CREATE DATABASE " + self.engine.url.database)
-                print("Database created successfully.")
+            self.connect()
+            self.metadata.create_all(self.engine)
+            print("Database created successfully.")
         except Exception as e:
-            print("An error occurred while creating database. Please see the logs for details.")
+            print("An error occurred while creating the database. Please see the logs for details.")
             logging.error(e)
             return
 
     def save_data_to_db(self, cleaned_data):
         try:
+            self.connect()
             with open(cleaned_data, 'r') as f:
                 reader = csv.reader(f)
                 next(reader)
