@@ -477,30 +477,6 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-[
-                        html.H3(children="Parallel correlation", style=style["h3"]),
-                        html.P(
-                            children="The correlation between the price of a listing and the other features is "
-                                     "shown in the "
-                                     "graph below. "
-                                     "The features are grouped into 3 categories: "
-                                     "location, property and host. "
-                                     "The correlation between the price and the features in each category is shown in "
-                                     "parallel. ",
-                            style=style["p"],
-                        ),
-                        dcc.Graph(
-                            id="parallel_coordinates_fig",
-                            figure=parallel_coordinates_fig,
-                            style=style["graph"],
-                        ),
-                    ],
-                ),
-            ], justify="left",
-        ),
-        dbc.Row(
-            [
-                dbc.Col(
                     [
                         html.H3(children="Price dynamics", style=style["h3"]),
                         html.P(
@@ -526,6 +502,30 @@ app.layout = dbc.Container(
                 ),
             ],
             justify="left",
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.H3(children="Parallel correlation", style=style["h3"]),
+                        html.P(
+                            children="The correlation between the price of a listing and the other features is "
+                                     "shown in the "
+                                     "graph below. "
+                                     "The features are grouped into 3 categories: "
+                                     "location, property and host. "
+                                     "The correlation between the price and the features in each category is shown in "
+                                     "parallel. ",
+                            style=style["p"],
+                        ),
+                        dcc.Graph(
+                            id="parallel_coordinates_fig",
+                            figure=parallel_coordinates_fig,
+                            style=style["graph"],
+                        ),
+                    ],
+                ),
+            ], justify="left",
         ),
         dbc.Row(
             [
